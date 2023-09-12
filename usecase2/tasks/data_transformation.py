@@ -132,11 +132,12 @@ class FeatureEngineering_Pipeline(Task):
           selector = SelectKBest(k=self.conf['kbestfeatures']['no_of_features'])
           df_input=self.preprocessing()
           target_col = df_input[self.conf['features']['target_col']]
-          selected_features = selector.fit_transform(df_input, target_col)
+          id_col_list = self.conf['features']['id_col_list']
+          selected_features = selector.fit_transform(df_input.drop(id_col_list,axis=1), target_col)
         
           mask = selector.get_support()
           top_n_features = df_input.columns[mask]
-          id_col_list = self.conf['features']['id_col_list']
+          
           cols_for_model_df_list = id_col_list + top_n_features
           df_final=df_input[cols_for_model_df_list]
           spark = SparkSession.builder.appName("CSV Loading Example").getOrCreate()
