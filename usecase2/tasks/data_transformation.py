@@ -88,7 +88,7 @@ class FeatureEngineering_Pipeline(Task):
         table_name = self.conf['feature-store']['table_name']
         print(table_name)
 
-        df_feature = df_input.drop(self.conf['features']['target'],axis=1)
+        df_feature = df_input.drop(self.conf['features']['target_col'],axis=1)
 
         df_spark = spark.createDataFrame(df_feature)
 
