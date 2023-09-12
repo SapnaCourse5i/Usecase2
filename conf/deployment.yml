@@ -8,7 +8,7 @@ custom:
     new_cluster:
       <<: *basic-cluster-props
       num_workers: 1
-      node_type_id: "m5d.xlarge"
+      node_type_id: "m5d.large"
 
 environments:
   default:
