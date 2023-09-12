@@ -147,7 +147,7 @@ class FeatureEngineering_Pipeline(Task):
           aws_secret_key = dbutils.secrets.get(scope="secrets-scope2", key="aws-secret-key")
           access_key = aws_access_key 
           secret_key = aws_secret_key
-          push_status = self.push_final_feature_df_to_s3(df_input,access_key,secret_key)
+          push_status = self.push_final_feature_df_to_s3(df_final,access_key,secret_key)
           print(push_status)
         #   top_n_col_list = select_kbest_features(df_input.drop(id_col_list,axis=1),target_col, 30)
           
