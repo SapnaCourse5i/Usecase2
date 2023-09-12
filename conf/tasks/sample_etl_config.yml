@@ -7,6 +7,7 @@ features:
   drop_col: "HCO_Affiliation"
   onehot_cols: ['Sex', 'Specialty', 'HCO_Affiliation_Type']
   id_target_col_list: ['NPI_ID', 'HCP_ID', 'TARGET']
+  id_col_list : ['NPI_ID', 'HCP_ID']
 
 feature-store:
              lookup_key: "HCP_ID"
@@ -14,11 +15,12 @@ feature-store:
 
 cleaned_data:
            preprocessed_df_path: 'preprocessed/preprocessed_df.csv'
+           final_features_df_path: 'features/final_features_df.csv'
 
 variance:
   threshold: 0.1
 
 kbestfeatures:
-  no_of_features: 10
+  no_of_features: 20
 
 
