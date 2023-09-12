@@ -133,10 +133,11 @@ class FeatureEngineering_Pipeline(Task):
           df_input=self.preprocessing()
           target_col = df_input[self.conf['features']['target_col']]
           id_col_list = self.conf['features']['id_col_list']
-          selected_features = selector.fit_transform(df_input.drop(id_col_list,axis=1), target_col)
+          df_input1=df_input.drop(id_col_list,axis=1)
+          selected_features = selector.fit_transform(df_input1, target_col)
         
           mask = selector.get_support()
-          top_n_features = df_input.columns[mask]
+          top_n_features = df_input1.columns[mask]
           
           cols_for_model_df_list = id_col_list + top_n_features
           df_final=df_input[cols_for_model_df_list]
