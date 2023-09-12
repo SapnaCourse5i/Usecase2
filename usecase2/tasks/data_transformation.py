@@ -138,8 +138,9 @@ class FeatureEngineering_Pipeline(Task):
         
           mask = selector.get_support()
           top_n_features = df_input1.columns[mask]
+          top_n_col_list = top_n_features.tolist()
           
-          cols_for_model_df_list = id_col_list + top_n_features
+          cols_for_model_df_list = id_col_list + top_n_col_list
           df_final=df_input[cols_for_model_df_list]
           spark = SparkSession.builder.appName("CSV Loading Example").getOrCreate()
 
