@@ -79,6 +79,7 @@ class FeatureEngineering_Pipeline(Task):
        
         df_input.columns = df_input.columns.str.strip()
         df_input.columns = df_input.columns.str.replace(' ', '_')
+        df_input['Sex'].replace({' M ': 'M', ' F ': 'F'},inplace=True)
         
         df_input.drop(self.conf['features']['drop_col'], axis= 1, inplace= True)
         onehot_cols=self.conf['features']['onehot_cols']
@@ -105,11 +106,9 @@ class FeatureEngineering_Pipeline(Task):
         push_status = self.push_df_to_s3(df_input,access_key,secret_key)
         print(push_status)
         
-    # def transform_data(df,one_hot_columns):
-
-    #     df_input = pd.get_dummies(df_input, columns=onehot_cols, drop_first=True)
-        
+    
     # def feature_selection():
+        #   col_for_feature_selection = df_input.columns.difference(self.conf['features']['id_target_col_list'])
     #     var_thr = VarianceThreshold(threshold = 0.1) #Removing both constant and quasi-constant
     #     var_thr.fit(df_input[col_for_feature_selection])
 
