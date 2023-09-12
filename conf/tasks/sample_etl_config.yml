@@ -15,7 +15,7 @@ feature-store:
 
 cleaned_data:
            preprocessed_df_path: 'preprocessed/preprocessed_df.csv'
-           final_features_df_path: 'features/final_features_df.csv'
+           final_features_df_path: 'preprocessed/final_features_df.csv'
 
 variance:
   threshold: 0.1
