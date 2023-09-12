@@ -1,0 +1,24 @@
+s3:
+  bucket_name: "usecase-2"
+  filepath: "Input_data/input_data.csv"
+
+features:
+  target_col: "TARGET"
+  drop_col: "HCO_Affiliation"
+  onehot_cols: ['Sex', 'Specialty', 'HCO_Affiliation_Type']
+  id_target_col_list: ['NPI_ID', 'HCP_ID', 'TARGET']
+
+feature-store:
+             lookup_key: "HCP_ID"
+             table_name: "usecase2_table"
+
+cleaned_data:
+           preprocessed_df_path: 'preprocessed/preprocessed_df.csv'
+
+variance:
+  threshold: 0.1
+
+kbestfeatures:
+  no_of_features: 10
+
+

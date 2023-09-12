@@ -1,0 +1,63 @@
+name: CI pipeline
+
+on:
+  push:
+    branches:
+      - '**'
+    tags-ignore:
+      - 'v*' # this tag type is used for release pipelines
+
+jobs:
+  data-engineering-pipeline:
+
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+      DATABRICKS_TOKEN:  ${{ secrets.DATABRICKS_TOKEN }}
+      AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          cache: 'pip' # caching pip dependencies
+          cache-dependency-path: setup.py
+
+      - name: Install pip
+        run: |
+          python -m pip install --upgrade pip
+
+      - name: Install dependencies and project in dev mode
+        run: |
+          pip install -e ".[local,test]"
+
+      - - name: Create Databricks Secrets Scope
+          run: |
+            databricks secrets create-scope --scope secrets-scope
+
+        - name: Set Databricks Secrets
+          run: |
+            databricks secrets put --scope secrets-scope --key aws-access-key --string-value "${{ secrets.AWS_ACCESS_KEY_ID }}"
+            databricks secrets put --scope secrets-scope --key aws-secret-key --string-value "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+            databricks secrets put --scope secrets-scope --key databricks-host --string-value "${{ secrets.DATABRICKS_HOST }}"
+            databricks secrets put --scope secrets-scope --key databricks-token --string-value "${{ secrets.DATABRICKS_TOKEN }}"
+
+        - name: Workflow Data-preprocessing deployment (assets only upload)
+          run: |
+            dbx deploy UseCase2-preprocessing-data --assets-only 
+
+        - name: Run the Data-preprocessing workflow in a jobless fashion
+          run: |
+            dbx launch UseCase2-preprocessing-data --from-assets --trace
+        - name: Remove Databricks Secret
+          run: |
+            databricks secrets delete-scope --scope secrets-scope
+
+
