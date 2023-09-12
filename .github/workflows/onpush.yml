@@ -40,14 +40,14 @@ jobs:
 
       - name: Create Databricks Secrets Scope
         run: |
-            databricks secrets create-scope --scope secrets-scope3
+            databricks secrets create-scope --scope secrets-scope4
 
       - name: Set Databricks Secrets
         run: |
-            databricks secrets put --scope secrets-scope3 --key aws-access-key --string-value "${{ secrets.AWS_ACCESS_KEY_ID }}"
-            databricks secrets put --scope secrets-scope3 --key aws-secret-key --string-value "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
-            databricks secrets put --scope secrets-scope3 --key databricks-host --string-value "${{ secrets.DATABRICKS_HOST }}"
-            databricks secrets put --scope secrets-scope3 --key databricks-token --string-value "${{ secrets.DATABRICKS_TOKEN }}"
+            databricks secrets put --scope secrets-scope4 --key aws-access-key --string-value "${{ secrets.AWS_ACCESS_KEY_ID }}"
+            databricks secrets put --scope secrets-scope4 --key aws-secret-key --string-value "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+            databricks secrets put --scope secrets-scope4 --key databricks-host --string-value "${{ secrets.DATABRICKS_HOST }}"
+            databricks secrets put --scope secrets-scope4 --key databricks-token --string-value "${{ secrets.DATABRICKS_TOKEN }}"
 
       - name: Workflow Data-preprocessing deployment (assets only upload)
         run: |
@@ -56,8 +56,8 @@ jobs:
       - name: Run the Data-preprocessing workflow in a jobless fashion
         run: |
             dbx launch UseCase2-preprocessing-data --from-assets --trace
-        # - name: Remove Databricks Secret
-        #   run: |
-        #     databricks secrets delete-scope --scope secrets-scope
+        - name: Remove Databricks Secret
+          run: |
+            databricks secrets delete-scope --scope secrets-scope4
 
 
