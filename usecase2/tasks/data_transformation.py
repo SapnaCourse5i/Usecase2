@@ -48,8 +48,8 @@ class FeatureEngineering_Pipeline(Task):
 
         dbutils = DBUtils(spark)
 
-        aws_access_key = dbutils.secrets.get(scope="secrets-scope", key="aws-access-key")
-        aws_secret_key = dbutils.secrets.get(scope="secrets-scope", key="aws-secret-key")
+        aws_access_key = dbutils.secrets.get(scope="secrets-scope3", key="aws-access-key")
+        aws_secret_key = dbutils.secrets.get(scope="secrets-scope3", key="aws-secret-key")
         
         
         access_key = aws_access_key 
