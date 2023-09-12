@@ -10,7 +10,8 @@ import pickle
 from pyspark.sql import SparkSession
 from io import BytesIO
 import uuid
-
+from sklearn.feature_selection import SelectKBest
+from sklearn.feature_selection import f_classif
 from databricks import feature_store
 
 from sklearn.model_selection import train_test_split
@@ -33,6 +34,20 @@ class FeatureEngineering_Pipeline(Task):
                       region_name='ap-south-1')
 
             s3_object_key = self.conf['cleaned_data']['preprocessed_df_path'] 
+            s3.Object(self.conf['s3']['bucket_name'], s3_object_key).put(Body=csv_content)
+
+            return {"df_push_status": 'success'}
+
+    def push_final_feature_df_to_s3(self,df,access_key,secret_key):
+            csv_buffer = BytesIO()
+            df.to_csv(csv_buffer, index=False)
+            csv_content = csv_buffer.getvalue()
+
+            s3 = boto3.resource("s3",aws_access_key_id=access_key, 
+                      aws_secret_access_key=secret_key, 
+                      region_name='ap-south-1')
+
+            s3_object_key = self.conf['cleaned_data']['features/final_features_df.csv'] 
             s3.Object(self.conf['s3']['bucket_name'], s3_object_key).put(Body=csv_content)
 
             return {"df_push_status": 'success'}
@@ -105,20 +120,44 @@ class FeatureEngineering_Pipeline(Task):
         
         push_status = self.push_df_to_s3(df_input,access_key,secret_key)
         print(push_status)
+        return df_input
         
     
-    # def feature_selection():
+    def feature_selection(self,n):
         #   col_for_feature_selection = df_input.columns.difference(self.conf['features']['id_target_col_list'])
     #     var_thr = VarianceThreshold(threshold = 0.1) #Removing both constant and quasi-constant
     #     var_thr.fit(df_input[col_for_feature_selection])
 
     #     var_thr.get_support()
-    
+          selector = SelectKBest(k=self.conf['kbestfeatures']['no_of_features'])
+          df_input=self.preprocessing()
+          target_col = df_input[self.conf['features']['target_col']]
+          selected_features = selector.fit_transform(df_input, target_col)
+        
+          mask = selector.get_support()
+          top_n_features = df_input.columns[mask]
+          id_col_list = self.conf['features']['id_col_list']
+          cols_for_model_df_list = id_col_list + top_n_features
+          df_final=df_input[cols_for_model_df_list]
+          spark = SparkSession.builder.appName("CSV Loading Example").getOrCreate()
+
+          dbutils = DBUtils(spark)
+
+          aws_access_key = dbutils.secrets.get(scope="secrets-scope2", key="aws-access-key")
+          aws_secret_key = dbutils.secrets.get(scope="secrets-scope2", key="aws-secret-key")
+          access_key = aws_access_key 
+          secret_key = aws_secret_key
+          push_status = self.push_final_feature_df_to_s3(df_input,access_key,secret_key)
+          print(push_status)
+        #   top_n_col_list = select_kbest_features(df_input.drop(id_col_list,axis=1),target_col, 30)
+          
+       
+            
    
 
     def launch(self):
         self.logger.info("Launching sample ETL task")
-        self.preprocessing()
+        self.feature_selection()
         self.logger.info("Sample ETL task finished!")
 
 # if you're using python_wheel_task, you'll need the entrypoint function to be used in setup.py
