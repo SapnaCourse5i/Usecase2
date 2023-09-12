@@ -1,6 +1,6 @@
 s3:
   bucket_name: "usecase-2"
-  filepath: "Input_data/input_data.csv"
+  filepath: "Input_data/Input_data.csv"
 
 features:
   target_col: "TARGET"
