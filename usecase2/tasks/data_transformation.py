@@ -103,7 +103,7 @@ class FeatureEngineering_Pipeline(Task):
             )
         
         push_status = self.push_df_to_s3(df_input,access_key,secret_key)
-        # print(push_status)
+        print(push_status)
         
     # def transform_data(df,one_hot_columns):
 
