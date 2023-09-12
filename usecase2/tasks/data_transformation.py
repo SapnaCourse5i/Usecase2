@@ -123,7 +123,7 @@ class FeatureEngineering_Pipeline(Task):
         return df_input
         
     
-    def feature_selection(self,n):
+    def feature_selection(self):
         #   col_for_feature_selection = df_input.columns.difference(self.conf['features']['id_target_col_list'])
     #     var_thr = VarianceThreshold(threshold = 0.1) #Removing both constant and quasi-constant
     #     var_thr.fit(df_input[col_for_feature_selection])
