@@ -63,7 +63,7 @@ class FeatureEngineering_Pipeline(Task):
         
         s3 = boto3.resource("s3",aws_access_key_id=aws_access_key, 
                       aws_secret_access_key=aws_secret_key, 
-                      region_name='us-west-2')
+                      region_name='ap-south-1')
                 
         bucket_name =  self.conf['s3']['bucket_name']
         csv_file_key = self.conf['s3']['filepath']
