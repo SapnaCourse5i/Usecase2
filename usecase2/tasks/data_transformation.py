@@ -47,7 +47,7 @@ class FeatureEngineering_Pipeline(Task):
                       aws_secret_access_key=secret_key, 
                       region_name='ap-south-1')
 
-            s3_object_key = self.conf['cleaned_data']['features/final_features_df.csv'] 
+            s3_object_key = self.conf['cleaned_data']['final_features_df_path'] 
             s3.Object(self.conf['s3']['bucket_name'], s3_object_key).put(Body=csv_content)
 
             return {"df_push_status": 'success'}
