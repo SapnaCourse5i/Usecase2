@@ -40,14 +40,14 @@ jobs:
 
       - name: Create Databricks Secrets Scope
         run: |
-            databricks secrets create-scope --scope secrets-scope
+            databricks secrets create-scope --scope2 secrets-scope2
 
       - name: Set Databricks Secrets
         run: |
-            databricks secrets put --scope secrets-scope --key aws-access-key --string-value "${{ secrets.AWS_ACCESS_KEY_ID }}"
-            databricks secrets put --scope secrets-scope --key aws-secret-key --string-value "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
-            databricks secrets put --scope secrets-scope --key databricks-host --string-value "${{ secrets.DATABRICKS_HOST }}"
-            databricks secrets put --scope secrets-scope --key databricks-token --string-value "${{ secrets.DATABRICKS_TOKEN }}"
+            databricks secrets put --scope2 secrets-scope2 --key aws-access-key --string-value "${{ secrets.AWS_ACCESS_KEY_ID }}"
+            databricks secrets put --scope2 secrets-scope2 --key aws-secret-key --string-value "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+            databricks secrets put --scope2 secrets-scope2 --key databricks-host --string-value "${{ secrets.DATABRICKS_HOST }}"
+            databricks secrets put --scope2 secrets-scope2 --key databricks-token --string-value "${{ secrets.DATABRICKS_TOKEN }}"
 
       - name: Workflow Data-preprocessing deployment (assets only upload)
         run: |
