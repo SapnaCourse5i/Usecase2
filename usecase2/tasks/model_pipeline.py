@@ -54,10 +54,10 @@ class model_training():
                 
         # fs.create_training_set looks up features in model_feature_lookups that match the primary key from inference_data_df
         training_set = fs.create_training_set(inference_data_df, model_feature_lookups, label=target,exclude_columns=lookup_key)
-        df_input= training_set.load_df().toPandas()
+        df= training_set.load_df().toPandas()
 
-        X_train, X_val, y_train, y_val,X_test,y_test=self.train_test_val_split(df_input,test_split,val_split)
-        mlflow.set_experiment(self.conf['Mlflow']['experiment_name'])
+        # X_train, X_val, y_train, y_val,X_test,y_test=self.train_test_val_split(df_input,test_split,val_split)
+        
 
         X = df.drop(target, axis=1)
         y = df[target]
@@ -119,8 +119,8 @@ class model_training():
         target=self.conf['features']['target_col']
 
         X_train, X_val, y_train, y_val,X_test,y_test=self.train_test_val_split(self,target,self.conf['features']['test_split'],self.conf['features']['val_split'],self.conf['feature-store']['table_name'],self.conf['feature-store']['lookup_key'],inference_data_df)
-
-        with mlflow.start_run(run_name=self.conf['Mlflow']['run_name']) as run:
+        mlflow.set_experiment(self.conf['Mlflow']['experiment_name'])
+        with mlflow.start_run() as run:
 
 
             best_param = {'colsample_bytree': 0.8011137517906433, 'gamma': 0.0003315092691686855,
