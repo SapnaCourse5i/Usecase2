@@ -47,7 +47,7 @@ fs = feature_store.FeatureStoreClient()
 
 class model_training(Task):
 
-    def train_test_val_split(self,df,target,test_split,val_split,table_name,lookup_key,inference_data_df):
+    def train_test_val_split(self,target,test_split,val_split,table_name,lookup_key,inference_data_df):
 
 
         model_feature_lookups = [FeatureLookup(table_name=table_name, lookup_key=lookup_key)]
