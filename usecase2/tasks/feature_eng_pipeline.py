@@ -21,7 +21,7 @@ from databricks.feature_store import feature_table, FeatureLookup
 import os
 
 from pyspark.dbutils import DBUtils
-from utils import select_kbest_features,variance_threshold_selection_remove_cols
+# from utils import select_kbest_features,variance_threshold_selection_remove_cols
 
 
 
@@ -146,7 +146,7 @@ class FeatureEngineering_Pipeline(Task):
           table_name = self.conf['feature-store']['usecase2_features']
           print(table_name)
 
-          df_feature = df_input.drop(self.conf['features']['target_col'],axis=1)
+          df_feature = df_final.drop(self.conf['features']['target_col'],axis=1)
 
           df_spark = spark.createDataFrame(df_feature)
 

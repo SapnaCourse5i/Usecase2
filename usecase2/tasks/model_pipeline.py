@@ -37,7 +37,7 @@ from io import BytesIO
 from sklearn.model_selection import train_test_split
 
 from databricks.feature_store import feature_table, FeatureLookup
-from utils import apply_model
+# from utils import apply_model
 
 warnings.filterwarnings('ignore')
 from pyspark.dbutils import DBUtils

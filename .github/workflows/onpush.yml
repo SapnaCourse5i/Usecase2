@@ -37,6 +37,12 @@ jobs:
       - name: Install dependencies and project in dev mode
         run: |
           pip install -e ".[local,test]"
+        
+        
+
+      - name: Remove Databricks Secret
+        run: |
+            databricks secrets delete-scope --scope secrets-scope2
 
       
       - name: Create Databricks Secrets Scope
@@ -61,9 +67,7 @@ jobs:
         run: |
             dbx launch UseCase2-preprocessing-data --from-assets --trace
 
-      - name: Remove Databricks Secret
-        run: |
-            databricks secrets delete-scope --scope secrets-scope2
+
       
 
 
