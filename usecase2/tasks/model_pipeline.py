@@ -91,8 +91,8 @@ class model_training(Task):
 
         dbutils = DBUtils(spark)
 
-        aws_access_key = dbutils.secrets.get(scope="secrets-scope", key="aws-access-key")
-        aws_secret_key = dbutils.secrets.get(scope="secrets-scope", key="aws-secret-key")
+        aws_access_key = dbutils.secrets.get(scope="secrets-scope2", key="aws-access-key")
+        aws_secret_key = dbutils.secrets.get(scope="secrets-scope2", key="aws-secret-key")
         
         s3 = boto3.resource("s3",aws_access_key_id=aws_access_key, 
                 aws_secret_access_key=aws_secret_key, 
