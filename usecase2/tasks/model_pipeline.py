@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import mlflow
 
+import boto3
 # Importing necessary libraries for encoding
 from sklearn.preprocessing import OrdinalEncoder, OneHotEncoder
 
