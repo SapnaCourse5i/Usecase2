@@ -143,7 +143,7 @@ class FeatureEngineering_Pipeline(Task):
           aws_secret_key = dbutils.secrets.get(scope="secrets-scope2", key="aws-secret-key")
           access_key = aws_access_key 
           secret_key = aws_secret_key
-          table_name = self.conf['feature-store']['usecase2_features']
+          table_name = self.conf['feature-store']['final_features_table']
           print(table_name)
 
           df_feature = df_final.drop(self.conf['features']['target_col'],axis=1)
