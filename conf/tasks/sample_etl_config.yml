@@ -30,6 +30,9 @@ split :
   test_split : 0.1
   val_split : 0.2
 
+Mlflow :
+  experiment_name : 'usecase2_ml'
+
 
 
 
