@@ -36,8 +36,8 @@ setup(
     extras_require={"local": LOCAL_REQUIREMENTS, "test": TEST_REQUIREMENTS},
     entry_points = {
         "console_scripts": [
-            "etl = usecase2.tasks.data_transformation:entrypoint",
-            "ml = usecase2.tasks.sample_ml_task:entrypoint",
+            "etl = usecase2.tasks.feature_eng_pipeline:entrypoint",
+            "ml = usecase2.tasks.model_training_pipeline:entrypoint",
     ]},
     version=__version__,
     description="",

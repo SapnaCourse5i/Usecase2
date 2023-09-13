@@ -8,10 +8,12 @@ features:
   onehot_cols: ['Sex', 'Specialty', 'HCO_Affiliation_Type']
   id_target_col_list: ['NPI_ID', 'HCP_ID', 'TARGET']
   id_col_list : ['NPI_ID', 'HCP_ID']
+  value_replace : 'Sex'
 
 feature-store:
-             lookup_key: "HCP_ID"
-             table_name: "usecase2_table"
+             lookup_key: ["HCP_ID","NPI_ID"]
+             table_name1: "usecase2_table"
+             final_features_table : "usecase2_features"
 
 cleaned_data:
            preprocessed_df_path: 'preprocessed/preprocessed_df.csv'
@@ -22,5 +24,13 @@ variance:
 
 kbestfeatures:
   no_of_features: 20
+
+
+split :
+  test_split : 0.1
+  val_split : 0.2
+
+
+
 
 

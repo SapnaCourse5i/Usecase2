@@ -21,6 +21,8 @@ from databricks.feature_store import feature_table, FeatureLookup
 import os
 
 from pyspark.dbutils import DBUtils
+from utils import select_kbest_features,variance_threshold_selection_remove_cols
+
 
 
 class FeatureEngineering_Pipeline(Task):
@@ -52,13 +54,7 @@ class FeatureEngineering_Pipeline(Task):
 
             return {"df_push_status": 'success'}
     def preprocessing(self):
-        # db = self.conf["output"].get("database", "default")
-        # table = self.conf["output"]["table"]
-        # self.logger.info(f"Writing housing dataset to {db}.{table}")
-        # _data: pd.DataFrame = fetch_california_housing(as_frame=True).frame
-        # df = self.spark.createDataFrame(_data)
-        # df.write.format("delta").mode("overwrite").saveAsTable(f"{db}.{table}")
-        # self.logger.info("Dataset successfully written")
+        
         spark = SparkSession.builder.appName("CSV Loading Example").getOrCreate()
 
         dbutils = DBUtils(spark)
@@ -94,13 +90,13 @@ class FeatureEngineering_Pipeline(Task):
        
         df_input.columns = df_input.columns.str.strip()
         df_input.columns = df_input.columns.str.replace(' ', '_')
-        df_input['Sex'].replace({' M ': 'M', ' F ': 'F'},inplace=True)
+        df_input[self.conf['features']['value_replace']].replace({' M ': 'M', ' F ': 'F'},inplace=True)
         
         df_input.drop(self.conf['features']['drop_col'], axis= 1, inplace= True)
         onehot_cols=self.conf['features']['onehot_cols']
         df_input = pd.get_dummies(df_input, columns=onehot_cols, drop_first=True)
         spark.sql(f"CREATE DATABASE IF NOT EXISTS {self.conf['feature-store']['table_name']}")
-                # Create a unique table name for each run. This prevents errors if you run the notebook multiple times.
+        # Create a unique table name for each run. This prevents errors if you run the notebook multiple times.
         table_name = self.conf['feature-store']['table_name']
         print(table_name)
 
@@ -124,11 +120,7 @@ class FeatureEngineering_Pipeline(Task):
         
     
     def feature_selection(self):
-        #   col_for_feature_selection = df_input.columns.difference(self.conf['features']['id_target_col_list'])
-    #     var_thr = VarianceThreshold(threshold = 0.1) #Removing both constant and quasi-constant
-    #     var_thr.fit(df_input[col_for_feature_selection])
-
-    #     var_thr.get_support()
+       
           selector = SelectKBest(k=self.conf['kbestfeatures']['no_of_features'])
           df_input=self.preprocessing()
           target_col = df_input[self.conf['features']['target_col']]
@@ -151,6 +143,22 @@ class FeatureEngineering_Pipeline(Task):
           aws_secret_key = dbutils.secrets.get(scope="secrets-scope2", key="aws-secret-key")
           access_key = aws_access_key 
           secret_key = aws_secret_key
+          table_name = self.conf['feature-store']['usecase2_features']
+          print(table_name)
+
+          df_feature = df_input.drop(self.conf['features']['target_col'],axis=1)
+
+          df_spark = spark.createDataFrame(df_feature)
+
+          fs = feature_store.FeatureStoreClient()
+
+          fs.create_table(
+                name=table_name,
+                primary_keys=[self.conf['feature-store']['lookup_key']],
+                df=df_spark,
+                schema=df_spark.schema,
+                description="health features"
+            )
           push_status = self.push_final_feature_df_to_s3(df_final,access_key,secret_key)
           print(push_status)
         #   top_n_col_list = select_kbest_features(df_input.drop(id_col_list,axis=1),target_col, 30)
