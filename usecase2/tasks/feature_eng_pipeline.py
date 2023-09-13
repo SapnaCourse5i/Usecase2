@@ -154,7 +154,7 @@ class FeatureEngineering_Pipeline(Task):
 
           fs.create_table(
                 name=table_name,
-                primary_keys=[self.conf['feature-store']['lookup_key']],
+                primary_keys=self.conf['feature-store']['lookup_key'],
                 df=df_spark,
                 schema=df_spark.schema,
                 description="health features"
