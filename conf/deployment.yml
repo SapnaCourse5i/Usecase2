@@ -64,7 +64,7 @@ environments:
             python_wheel_task:
               package_name: "usecase2"
               entry_point: "ml"
-              parameters: [ "--conf-file", "file:fuse://conf/tasks/sample_ml_config.yml" ]
+              parameters: [ "--conf-file", "file:fuse://conf/tasks/sample_etl_config.yml" ]
           ###############################################################################
           # this is an example task based on the notebook                               #
           # Please note that first you'll need to add a Repo and commit notebook to it. #
