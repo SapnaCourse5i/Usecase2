@@ -119,7 +119,7 @@ class model_training(Task):
 
         target=self.conf['features']['target_col']
 
-        X_train, X_val, y_train, y_val,X_test,y_test=self.train_test_val_split(self,target,self.conf['features']['test_split'],self.conf['features']['val_split'],self.conf['feature-store']['table_name'],self.conf['feature-store']['lookup_key'],inference_data_df)
+        X_train, X_val, y_train, y_val,X_test,y_test=self.train_test_val_split(self,target,self.conf['split']['test_split'],self.conf['split']['val_split'],self.conf['feature-store']['table_name'],self.conf['feature-store']['lookup_key'],inference_data_df)
         mlflow.set_experiment(self.conf['Mlflow']['experiment_name'])
         with mlflow.start_run() as run:
 
