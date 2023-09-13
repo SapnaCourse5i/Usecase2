@@ -12,7 +12,7 @@ features:
 
 feature-store:
              lookup_key: ["HCP_ID","NPI_ID"]
-             table_name1: "usecase2_table"
+             table_name: "usecase2_table"
              final_features_table : "usecase2_features"
 
 cleaned_data:
