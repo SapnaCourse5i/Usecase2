@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import warnings
 warnings.filterwarnings("ignore")
-
+from usecase2.common import Task
 #Visual Libraries
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -45,7 +45,7 @@ from pyspark.dbutils import DBUtils
 fs = feature_store.FeatureStoreClient()
 
 
-class model_training():
+class model_training(Task):
 
     def train_test_val_split(self,df,target,test_split,val_split,table_name,lookup_key,inference_data_df):
 
@@ -138,6 +138,22 @@ class model_training():
             mlflow.log_metric("roc_auc",roc_auc)
             
             mlflow.log_metrics(self.metrics(y_train,y_pred_train,y_val,y_pred_val,y_test,y_pred_test))
+
+    def launch(self):
+        self.logger.info("Launching sample ETL task")
+        self.feature_selection()
+        self.logger.info("Sample ETL task finished!")
+
+# if you're using python_wheel_task, you'll need the entrypoint function to be used in setup.py
+def entrypoint():  # pragma: no cover
+    task = model_training()
+
+    task.launch()
+
+# if you're using spark_python_task, you'll need the __main__ block to start the code execution
+if __name__ == '__main__':
+    entrypoint()
+
 
             # fs.log_model(
             # model=LR_Classifier,
