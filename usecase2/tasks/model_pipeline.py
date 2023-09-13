@@ -100,6 +100,7 @@ class model_training(Task):
         
         bucket_name =  self.conf['s3']['bucket_name']
         csv_file_key = self.conf['cleaned_data']['final_features_df_path']
+        print('start')
 
         
         s3_object = s3.Object(bucket_name, csv_file_key)
