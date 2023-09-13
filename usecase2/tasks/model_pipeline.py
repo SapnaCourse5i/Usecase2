@@ -113,7 +113,7 @@ class model_training(Task):
 
         df_input_spark = spark.createDataFrame(df_input)
 
-        inference_data_df = df_input_spark.select(self.conf['feature-store']['id_target_col_list'])
+        inference_data_df = df_input_spark.select(self.conf['features']['id_target_col_list'])
 
 
 
