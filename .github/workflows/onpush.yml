@@ -59,13 +59,13 @@ jobs:
       
 
 
-      - name: Workflow Data-preprocessing deployment (assets only upload)
-        run: |
-            dbx deploy UseCase2-preprocessing-data --assets-only 
+      # - name: Workflow Data-preprocessing deployment (assets only upload)
+      #   run: |
+      #       dbx deploy UseCase2-preprocessing-data --assets-only 
 
-      - name: Run the Data-preprocessing workflow in a jobless fashion
-        run: |
-            dbx launch UseCase2-preprocessing-data --from-assets --trace
+      # - name: Run the Data-preprocessing workflow in a jobless fashion
+      #   run: |
+      #       dbx launch UseCase2-preprocessing-data --from-assets --trace
       - name: Workflow Model Training deployment (assets only upload)
         run: |
             dbx deploy UseCase2-training-data --assets-only 
