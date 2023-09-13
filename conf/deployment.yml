@@ -35,9 +35,10 @@ environments:
               package_name: "usecase2"
               entry_point: "etl" # take a look at the setup.py entry_points section for details on how to define an entrypoint
               parameters: ["--conf-file", "file:fuse://conf/tasks/sample_etl_config.yml"]
+      name: "UseCase2-training-data"
+        tasks:
           - task_key: "ml"
             <<: *basic-static-cluster
-            job_cluster_key: "default"
             python_wheel_task:
               package_name: "usecase2"
               entry_point: "ml"
