@@ -31,8 +31,8 @@ split :
   val_split : 0.2
 
 Mlflow :
-  experiment_name : 'usecase2_ml'
-  
+  experiment_name : "/Shared/dbx/usecase2_ml"
+
 
 
 
