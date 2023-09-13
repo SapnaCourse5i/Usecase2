@@ -99,7 +99,7 @@ class model_training(Task):
                 region_name='ap-south-1')
         
         bucket_name =  self.conf['s3']['bucket_name']
-        csv_file_key = self.conf['preprocessed']['preprocessed_df_path']
+        csv_file_key = self.conf['cleaned_data']['final_features_df_path']
 
         
         s3_object = s3.Object(bucket_name, csv_file_key)
