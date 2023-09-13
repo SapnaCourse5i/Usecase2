@@ -37,7 +37,7 @@ environments:
               parameters: ["--conf-file", "file:fuse://conf/tasks/sample_etl_config.yml"]
           - task_key: "ml"
             depends_on:
-              - task_key: "etl"
+              - task_key: "maiin"
             job_cluster_key: "default"
             python_wheel_task:
               package_name: "usecase2"

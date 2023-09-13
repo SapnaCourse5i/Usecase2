@@ -37,7 +37,7 @@ setup(
     entry_points = {
         "console_scripts": [
             "etl = usecase2.tasks.feature_eng_pipeline:entrypoint",
-            "ml = usecase2.tasks.model_training_pipeline:entrypoint",
+            "ml = usecase2.tasks.model_pipeline:entrypoint",
     ]},
     version=__version__,
     description="",
