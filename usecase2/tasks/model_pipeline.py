@@ -69,12 +69,15 @@ class model_training():
         X_train, X_val, y_train, y_val = train_test_split(X_train_pre, y_train_pre, test_size=val_split, random_state=42, stratify= y_train_pre)
         return X_train, X_val, y_train, y_val,X_test,y_test
     
-    def metrics(y_train,y_pred_train,y_val,y_pred_val):
+    def metrics(y_train,y_pred_train,y_val,y_pred_val,y_test,y_pred):
 
         f1_train = f1_score(y_train, y_pred_train)
         accuracy_train = accuracy_score(y_train, y_pred_train)
 
         f1_val = f1_score(y_val, y_pred_val)
+        accuracy_val = accuracy_score(y_val, y_pred_val)
+
+        f1_val = f1_score(y_test, y_pred)
         accuracy_val = accuracy_score(y_val, y_pred_val)
         
         recall_train=recall_score(y_train, y_pred_train)
@@ -115,7 +118,7 @@ class model_training():
 
         target=self.conf['features']['target_col']
 
-        X_train, X_val, y_train, y_val,X_test,y_test=self.train_test_val_split(self,target,self.conf['features']['test_split'],self.conf['features']['val_split'],self.conf['feature-store']['table_name1'],self.conf['feature-store']['lookup_key'],inference_data_df)
+        X_train, X_val, y_train, y_val,X_test,y_test=self.train_test_val_split(self,target,self.conf['features']['test_split'],self.conf['features']['val_split'],self.conf['feature-store']['table_name'],self.conf['feature-store']['lookup_key'],inference_data_df)
 
         with mlflow.start_run(run_name=self.conf['Mlflow']['run_name']) as run:
 
@@ -134,7 +137,7 @@ class model_training():
             
             mlflow.log_metric("roc_auc",roc_auc)
             
-            mlflow.log_metrics(self.metrics(y_train,y_pred_train,y_val,y_pred_val))
+            mlflow.log_metrics(self.metrics(y_train,y_pred_train,y_val,y_pred_val,y_test,y_pred_test))
 
             # fs.log_model(
             # model=LR_Classifier,
