@@ -141,7 +141,7 @@ class model_training(Task):
 
     def launch(self):
         self.logger.info("Launching sample ETL task")
-        self.feature_selection()
+        self.train_model()
         self.logger.info("Sample ETL task finished!")
 
 # if you're using python_wheel_task, you'll need the entrypoint function to be used in setup.py
