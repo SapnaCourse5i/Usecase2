@@ -69,7 +69,7 @@ class model_training(Task):
         X_train, X_val, y_train, y_val = train_test_split(X_train_pre, y_train_pre, test_size=val_split, random_state=42, stratify= y_train_pre)
         return X_train, X_val, y_train, y_val,X_test,y_test
     
-    def metrics(y_train,y_pred_train,y_val,y_pred_val,y_test,y_pred):
+    def metrics(self,y_train,y_pred_train,y_val,y_pred_val,y_test,y_pred):
 
         f1_train = f1_score(y_train, y_pred_train)
         accuracy_train = accuracy_score(y_train, y_pred_train)
