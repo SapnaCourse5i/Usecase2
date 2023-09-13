@@ -17,7 +17,9 @@ LOCAL_REQUIREMENTS = [
     "delta-spark==1.1.0",
     "scikit-learn",
     "pandas",
-    "mlflow",
+    "mlflow"
+    "xgboost"
+    "lightgm",
 ]
 
 TEST_REQUIREMENTS = [
