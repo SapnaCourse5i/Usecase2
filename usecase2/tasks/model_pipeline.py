@@ -116,6 +116,7 @@ class model_training(Task):
            
             return cm,classification_report
     def roc_curve(self,y_test, y_prop):
+            y_prop = y_prop[:,1]
             fpr, tpr, thresholds = roc_curve(y_test, y_prop)
             roc_auc = roc_auc_score(y_test, y_prop)
 
