@@ -143,7 +143,7 @@ class model_training(Task):
             plt.legend(loc='lower right')
             roc_curve_plot_path = "roc_curve.png"
             
-            # plt.savefig(roc_curve_plot_path)
+            plt.savefig(roc_curve_plot_path)
 
     
       
