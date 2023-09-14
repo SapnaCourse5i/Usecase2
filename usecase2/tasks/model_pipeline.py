@@ -88,7 +88,7 @@ class model_training(Task):
                 'f1 score train': round(f1_train, 2), 'f1 score val': round(f1_val, 2)}
    
 
-        def confusion_metrics(true_labels, predicted_labels):
+    def confusion_metrics(self,true_labels, predicted_labels):
             """
             Logs confusion metrics and classification report in MLflow.
 
@@ -161,11 +161,11 @@ class model_training(Task):
         X_train, X_val, y_train, y_val,X_test,y_test=self.train_test_val_split(target,self.conf['split']['test_split'],self.conf['split']['val_split'],self.conf['feature-store']['table_name'],self.conf['feature-store']['lookup_key'],inference_data_df)
         mlflow.set_experiment(self.conf['Mlflow']['experiment_name'])
         with mlflow.start_run() as run:
-
-
+            print(self.conf['params'])
+            # best_param=self.conf['param']
             # best_param = {'colsample_bytree': 0.8011137517906433, 'gamma': 0.0003315092691686855,
             # 'max_depth': 7, 'reg_alpha': 0.20064996416845873, 'subsample': 0.19265865309365698}
-            model_xgb = xgb.XGBClassifier(self.conf['param'])
+            model_xgb = xgb.XGBClassifier(**self.conf['params'])
             model_xgb.fit(X_train.drop(self.conf['features']['id_col_list'], axis=1, errors='ignore'), y_train)
             y_pred_train = model_xgb.predict(X_train.drop(self.conf['features']['id_col_list'], axis=1, errors='ignore'))
             y_pred_val = model_xgb.predict(X_val.drop(self.conf['features']['id_col_list'], axis=1, errors='ignore'))
