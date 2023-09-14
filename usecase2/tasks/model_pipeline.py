@@ -173,9 +173,8 @@ class model_training(Task):
             
             fpr, tpr, threshold = roc_curve(y_test,y_pred_test)
             roc_auc = auc(fpr, tpr)
-            cm=self.confusion_matrix(y_test,y_pred_test)
-            mlflow.log_artifact('confusion_matrix.png')
-
+            cm=self.confusion_metrics(y_test,y_pred_test)
+            
             
             
             mlflow.log_metric("roc_auc",roc_auc)
@@ -183,6 +182,8 @@ class model_training(Task):
             mlflow.log_metrics(self.metrics(y_train,y_pred_train,y_val,y_pred_val,y_test,y_pred_test))
 
             mlflow.xgboost.log_model(model=model_xgb,artifact_path="usecase2",registered_model_name="Physician Model")
+            mlflow.log_artifact('confusion_matrix.png')
+
             # fs.log_model(
             #                     model=LR_Classifier,
             #                     artifact_path="health_prediction",
