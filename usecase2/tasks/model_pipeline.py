@@ -94,8 +94,8 @@ class model_training(Task):
             Logs confusion metrics and classification report in MLflow.
 
             Parameters:
-            - true_labels: The true labels (ground truth).
-            - predicted_labels: The predicted labels (model predictions).
+            - y_test: The true labels (ground truth).
+            - y_pred: The predicted labels (model predictions).
             - run_name: The name for the MLflow run.
 
             Returns:
@@ -116,6 +116,17 @@ class model_training(Task):
            
             return cm,classification_report
     def roc_curve(self,y_test, y_prop):
+            """
+            Logs Roc_auc curve in MLflow.
+
+            Parameters:
+            - y_test: The true labels (ground truth).
+            - y_prob: The predicted probabilities of labels (model predictions).
+            - run_name: The name for the MLflow run.
+
+            Returns:
+            - None
+            """
             y_prop = y_prop[:,1]
             fpr, tpr, thresholds = roc_curve(y_test, y_prop)
             roc_auc = roc_auc_score(y_test, y_prop)
@@ -176,10 +187,8 @@ class model_training(Task):
         X_train, X_val, y_train, y_val,X_test,y_test=self.train_test_val_split(target,self.conf['split']['test_split'],self.conf['split']['val_split'],self.conf['feature-store']['table_name'],self.conf['feature-store']['lookup_key'],inference_data_df)
         mlflow.set_experiment(self.conf['Mlflow']['experiment_name'])
         with mlflow.start_run() as run:
-            print(self.conf['params'])
-            # best_param=self.conf['param']
-            # best_param = {'colsample_bytree': 0.8011137517906433, 'gamma': 0.0003315092691686855,
-            # 'max_depth': 7, 'reg_alpha': 0.20064996416845873, 'subsample': 0.19265865309365698}
+            # print(self.conf['params'])
+            
             model_xgb = xgb.XGBClassifier(**self.conf['params'])
 
             model_xgb.fit(X_train.drop(self.conf['features']['id_col_list'], axis=1, errors='ignore'), y_train)
@@ -195,7 +204,7 @@ class model_training(Task):
             cm=self.confusion_metrics(y_test,y_pred_test)
             
             
-            
+            #log all metrics
             mlflow.log_metric("roc_auc",roc_auc)
             
             mlflow.log_metrics(self.metrics(y_train,y_pred_train,y_val,y_pred_val,y_test,y_pred_test))
@@ -211,18 +220,12 @@ class model_training(Task):
             # Log the pickle file as an artifact in MLflow
             mlflow.log_artifact("model.pkl")
 
-            # fs.log_model(
-            #                     model=LR_Classifier,
-            #                     artifact_path="health_prediction",
-            #                     flavor=mlflow.sklearn,
-            #                     training_set=training_set,
-            #                     registered_model_name="pharma_model",
-            #                     )
+           
 
     def launch(self):
-        self.logger.info("Launching sample ETL task")
+        self.logger.info("Launching Model Training task")
         self.train_model()
-        self.logger.info("Sample ETL task finished!")
+        self.logger.info("Model Training finished!")
 
 # if you're using python_wheel_task, you'll need the entrypoint function to be used in setup.py
 def entrypoint():  # pragma: no cover
@@ -235,57 +238,4 @@ if __name__ == '__main__':
     entrypoint()
 
 
-            # fs.log_model(
-            # model=LR_Classifier,
-            # artifact_path="health_prediction",
-            # flavor=mlflow.sklearn,
-            # training_set=training_set,
-            # registered_model_name="pharma_usecase2_model",
-            # )
-        
            
-    # def train_val_test_split(self, table_name, lookup_key,target, inference_data_df):
-    #      # In the FeatureLookup, if you do not provide the `feature_names` parameter, all features except primary keys are returned
-    #         model_feature_lookups = [FeatureLookup(table_name=table_name, lookup_key=lookup_key)]
-        
-    #         # fs.create_training_set looks up features in model_feature_lookups that match the primary key from inference_data_df
-    #         training_set = fs.create_training_set(inference_data_df, model_feature_lookups, label=target,exclude_columns=lookup_key)
-    #         training_pd = training_set.load_df().toPandas()
-        
-    #         # Create train and test datasets
-    #         X = training_pd.drop(target, axis=1)
-    #         y = training_pd[target]
-    #         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=self.conf['ModelTraining']['test_split'], random_state=42)
-
-    #         X_train_pre, X_val, y_train_pre, y_val = train_test_split(X_train, y_train, test_size=self.conf['ModelTraining']['validation_split'], random_state=43)
-    #         return X_train_pre, X_test, y_train_pre, y_test, X_val, y_val, training_set
-    # def apply_model(self,model, X_train, y_train, X_val, y_val, drop_id_col_list):
-    # # Fit the model
-    #         mlflow.set_experiment(self.conf['Mlflow']['experiment_name'])
-    #         with mlflow.start_run(run_name=self.conf['Mlflow']['run_name']) as run:
-    #             model.fit(X_train.drop(drop_id_col_list, axis=1, errors='ignore'), y_train)
-
-    #             # Make predictions
-    #             y_train_pred = model.predict(X_train.drop(drop_id_col_list, axis=1, errors='ignore'))
-    #             y_pred = model.predict(X_val.drop(drop_id_col_list, axis=1, errors='ignore'))
-
-    #             # Calculate performance metrics
-    #             accuracy_train = accuracy_score(y_train, y_train_pred)
-    #             accuracy_val = accuracy_score(y_val, y_pred)
-    #             f1_train = f1_score(y_train,y_train_pred)
-    #             f1_val = f1_score(y_val, y_pred)
-    #             return accuracy_train, accuracy_val,f1_train,f1_val
-    # def train_vanilla_models():
-    #       # Defining the models
-    #         vanila_models = [
-    #             ("Logistic Regression", LogisticRegression(random_state=321)),
-    #             ("Decision Tree", DecisionTreeClassifier(random_state=321)),
-    #             ("Random Forest", RandomForestClassifier(random_state=321)),
-    #             ("XGB Classifier", xgb.XGBClassifier(random_state=321)),
-    #             ("LGBM Classifier", lgb.LGBMClassifier(random_state=321))
-    #         ]
-    #         X_train_pre, X_test, y_train_pre, y_test, X_val, y_val, training_set=self.train_val_test_split(table_name, lookup_key,target, inference_data_df)
-    #         for name, model in vanila_models:
-    #                 apply_model(model, X_train, y_train, X_val, y_val,drop_id_col_list)
-
-    # def evaluate_model():
