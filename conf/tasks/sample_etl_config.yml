@@ -33,6 +33,13 @@ split :
 Mlflow :
   experiment_name : "/Shared/dbx/usecase2_ml"
 
+params :
+ colsample_bytree: 0.8011137517906433
+ gamma': 0.0003315092691686855
+ max_depth': 7
+ reg_alpha: 0.20064996416845873
+ subsample': 0.19265865309365698
+
 
 
 

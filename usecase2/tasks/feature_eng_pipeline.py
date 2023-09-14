@@ -134,7 +134,7 @@ class FeatureEngineering_Pipeline(Task):
           
           cols_for_model_df_list = id_col_list + top_n_col_list
           df_final=df_input[cols_for_model_df_list]
-        #   df_final[id_col_list]=df_input[id_col_list]
+          df_final[id_col_list]=df_input[id_col_list]
           spark = SparkSession.builder.appName("CSV Loading Example").getOrCreate()
 
           dbutils = DBUtils(spark)
@@ -143,22 +143,22 @@ class FeatureEngineering_Pipeline(Task):
           aws_secret_key = dbutils.secrets.get(scope="secrets-scope2", key="aws-secret-key")
           access_key = aws_access_key 
           secret_key = aws_secret_key
-          table_name = self.conf['feature-store']['final_features_table']
-          print(table_name)
+        #   table_name = self.conf['feature-store']['final_features_table']
+        #   print(table_name)
 
-          df_feature = df_final.drop(self.conf['features']['target_col'],axis=1)
+        #   df_feature = df_final.drop(self.conf['features']['target_col'],axis=1)
 
-          df_spark = spark.createDataFrame(df_feature)
+        #   df_spark = spark.createDataFrame(df_feature)
 
-          fs = feature_store.FeatureStoreClient()
+        #   fs = feature_store.FeatureStoreClient()
 
-          fs.create_table(
-                name=table_name,
-                primary_keys=self.conf['feature-store']['lookup_key'],
-                df=df_spark,
-                schema=df_spark.schema,
-                description="health features"
-            )
+        #   fs.create_table(
+        #         name=table_name,
+        #         primary_keys=self.conf['feature-store']['lookup_key'],
+        #         df=df_spark,
+        #         schema=df_spark.schema,
+        #         description="health features"
+            # )
           push_status = self.push_final_feature_df_to_s3(df_final,access_key,secret_key)
           print(push_status)
         #   top_n_col_list = select_kbest_features(df_input.drop(id_col_list,axis=1),target_col, 30)

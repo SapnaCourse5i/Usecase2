@@ -35,6 +35,7 @@ from pyspark.sql import SparkSession
 from io import BytesIO
 
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix, classification_report
 
 from databricks.feature_store import feature_table, FeatureLookup
 # from utils import apply_model
@@ -85,6 +86,44 @@ class model_training(Task):
     
         return {'accuracy_train': round(accuracy_train, 2),'accuracy_val': round(accuracy_val, 2),
                 'f1 score train': round(f1_train, 2), 'f1 score val': round(f1_val, 2)}
+   
+
+        def confusion_metrics(true_labels, predicted_labels):
+            """
+            Logs confusion metrics and classification report in MLflow.
+
+            Parameters:
+            - true_labels: The true labels (ground truth).
+            - predicted_labels: The predicted labels (model predictions).
+            - run_name: The name for the MLflow run.
+
+            Returns:
+            - None
+            """
+            # Calculate the confusion matrix
+            cm = confusion_matrix(true_labels, predicted_labels)
+
+            # Log the confusion matrix as an artifact in MLflow
+            # with mlflow.start_run(run_name=run_name):
+            #     mlflow.log_artifact('confusion_matrix.png')
+
+            # Calculate and log additional classification metrics
+            classification_metrics = classification_report(true_labels, predicted_labels, output_dict=True)
+            # for metric_name, metric_value in classification_metrics.items():
+            #     mlflow.log_metric(metric_name, metric_value)
+            
+            # Log the confusion matrix plot as an artifact in MLflow
+            fig, ax = plt.subplots(figsize=(8, 6))
+            sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", ax=ax)
+            plt.xlabel("Predicted")
+            plt.ylabel("Actual")
+            plt.title("Confusion Matrix")
+            plt.savefig('confusion_matrix.png')
+            # mlflow.log_artifact('confusion_matrix.png')
+            return cm,classification_report
+
+        
+
     
     def train_model(self):
         spark = SparkSession.builder.appName("CSV Loading Example").getOrCreate()
@@ -124,9 +163,9 @@ class model_training(Task):
         with mlflow.start_run() as run:
 
 
-            best_param = {'colsample_bytree': 0.8011137517906433, 'gamma': 0.0003315092691686855,
-            'max_depth': 7, 'reg_alpha': 0.20064996416845873, 'subsample': 0.19265865309365698}
-            model_xgb = xgb.XGBClassifier(**best_param)
+            # best_param = {'colsample_bytree': 0.8011137517906433, 'gamma': 0.0003315092691686855,
+            # 'max_depth': 7, 'reg_alpha': 0.20064996416845873, 'subsample': 0.19265865309365698}
+            model_xgb = xgb.XGBClassifier(self.conf['param'])
             model_xgb.fit(X_train.drop(self.conf['features']['id_col_list'], axis=1, errors='ignore'), y_train)
             y_pred_train = model_xgb.predict(X_train.drop(self.conf['features']['id_col_list'], axis=1, errors='ignore'))
             y_pred_val = model_xgb.predict(X_val.drop(self.conf['features']['id_col_list'], axis=1, errors='ignore'))
@@ -134,11 +173,23 @@ class model_training(Task):
             
             fpr, tpr, threshold = roc_curve(y_test,y_pred_test)
             roc_auc = auc(fpr, tpr)
+            cm=self.confusion_matrix(y_test,y_pred_test)
+            mlflow.log_artifact('confusion_matrix.png')
+
             
             
             mlflow.log_metric("roc_auc",roc_auc)
             
             mlflow.log_metrics(self.metrics(y_train,y_pred_train,y_val,y_pred_val,y_test,y_pred_test))
+
+            mlflow.xgboost.log_model(model=model_xgb,artifact_path="usecase2",registered_model_name="Physician Model")
+            # fs.log_model(
+            #                     model=LR_Classifier,
+            #                     artifact_path="health_prediction",
+            #                     flavor=mlflow.sklearn,
+            #                     training_set=training_set,
+            #                     registered_model_name="pharma_model",
+            #                     )
 
     def launch(self):
         self.logger.info("Launching sample ETL task")
