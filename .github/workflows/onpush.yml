@@ -48,9 +48,9 @@ jobs:
         run: |
             databricks secrets create-scope --scope secrets-scope2
       
-      - name: Create Databricks Secrets Scope
-        run: |
-            databricks secrets create-scope --scope secrets-scope
+      # - name: Create Databricks Secrets Scope
+      #   run: |
+      #       databricks secrets create-scope --scope secrets-scope
 
       - name: Set Databricks Secrets
         run: |
