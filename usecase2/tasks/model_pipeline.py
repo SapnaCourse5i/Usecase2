@@ -7,6 +7,7 @@ from usecase2.common import Task
 import matplotlib.pyplot as plt
 import seaborn as sns
 import mlflow
+import pickle
 
 import boto3
 # Importing necessary libraries for encoding
@@ -78,17 +79,17 @@ class model_training(Task):
         f1_val = f1_score(y_val, y_pred_val)
         accuracy_val = accuracy_score(y_val, y_pred_val)
 
-        f1_val = f1_score(y_test, y_pred)
-        accuracy_val = accuracy_score(y_val, y_pred_val)
+        f1_test = f1_score(y_test, y_pred)
+        accuracy_test = accuracy_score(y_val, y_pred_val)
         
         recall_train=recall_score(y_train, y_pred_train)
         recall_val=recall_score(y_val, y_pred_val)
     
-        return {'accuracy_train': round(accuracy_train, 2),'accuracy_val': round(accuracy_val, 2),
-                'f1 score train': round(f1_train, 2), 'f1 score val': round(f1_val, 2)}
+        return {'accuracy_train': round(accuracy_train, 2),'accuracy_val': round(accuracy_val, 2),'accuracy_test': round(accuracy_test, 2),
+                'f1 score train': round(f1_train, 2), 'f1 score val': round(f1_val, 2),'f1 score test': round(f1_test, 2)}
    
 
-    def confusion_metrics(self,true_labels, predicted_labels):
+    def confusion_metrics(self,y_test,y_pred):
             """
             Logs confusion metrics and classification report in MLflow.
 
@@ -101,26 +102,39 @@ class model_training(Task):
             - None
             """
             # Calculate the confusion matrix
-            cm = confusion_matrix(true_labels, predicted_labels)
+            cm = confusion_matrix(y_test, y_pred)
 
-            # Log the confusion matrix as an artifact in MLflow
-            # with mlflow.start_run(run_name=run_name):
-            #     mlflow.log_artifact('confusion_matrix.png')
-
-            # Calculate and log additional classification metrics
-            classification_metrics = classification_report(true_labels, predicted_labels, output_dict=True)
-            # for metric_name, metric_value in classification_metrics.items():
-            #     mlflow.log_metric(metric_name, metric_value)
             
-            # Log the confusion matrix plot as an artifact in MLflow
+            classification_metrics = classification_report(y_test, y_pred, output_dict=True)
+            
             fig, ax = plt.subplots(figsize=(8, 6))
             sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", ax=ax)
             plt.xlabel("Predicted")
             plt.ylabel("Actual")
             plt.title("Confusion Matrix")
             plt.savefig('confusion_matrix.png')
-            # mlflow.log_artifact('confusion_matrix.png')
+           
             return cm,classification_report
+    def roc_curve(self,y_test, y_prop):
+            fpr, tpr, thresholds = roc_curve(y_test, y_prop)
+            roc_auc = roc_auc_score(y_test, y_prop)
+
+            # Create and save the ROC curve plot
+            plt.figure(figsize=(8, 6))
+            plt.plot(fpr, tpr, color='darkorange', lw=2, label=f'ROC curve (area = {roc_auc:.2f})')
+            plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+            plt.xlim([0.0, 1.0])
+            plt.ylim([0.0, 1.05])
+            plt.xlabel('False Positive Rate')
+            plt.ylabel('True Positive Rate')
+            plt.title('Receiver Operating Characteristic (ROC) Curve')
+            plt.legend(loc='lower right')
+            roc_curve_plot_path = "roc_curve.png"
+            
+            # plt.savefig(roc_curve_plot_path)
+
+    
+      
 
         
 
@@ -166,10 +180,14 @@ class model_training(Task):
             # best_param = {'colsample_bytree': 0.8011137517906433, 'gamma': 0.0003315092691686855,
             # 'max_depth': 7, 'reg_alpha': 0.20064996416845873, 'subsample': 0.19265865309365698}
             model_xgb = xgb.XGBClassifier(**self.conf['params'])
+
             model_xgb.fit(X_train.drop(self.conf['features']['id_col_list'], axis=1, errors='ignore'), y_train)
             y_pred_train = model_xgb.predict(X_train.drop(self.conf['features']['id_col_list'], axis=1, errors='ignore'))
             y_pred_val = model_xgb.predict(X_val.drop(self.conf['features']['id_col_list'], axis=1, errors='ignore'))
             y_pred_test = model_xgb.predict(X_test.drop(self.conf['features']['id_col_list'], axis=1, errors='ignore'))
+            y_val_probs = model_xgb.predict_proba(X_val.drop(self.conf['features']['id_col_list'], axis=1, errors='ignore'))
+            y_pred_probs = model_xgb.predict_proba(X_test.drop(self.conf['features']['id_col_list'], axis=1, errors='ignore'))
+            y_train_probs = model_xgb.predict_proba(X_train.drop(self.conf['features']['id_col_list'], axis=1, errors='ignore'))
             
             fpr, tpr, threshold = roc_curve(y_test,y_pred_test)
             roc_auc = auc(fpr, tpr)
@@ -180,9 +198,17 @@ class model_training(Task):
             mlflow.log_metric("roc_auc",roc_auc)
             
             mlflow.log_metrics(self.metrics(y_train,y_pred_train,y_val,y_pred_val,y_test,y_pred_test))
+            self.roc_curve(y_test, y_pred_probs)
 
             mlflow.xgboost.log_model(xgb_model=model_xgb,artifact_path="usecase2",registered_model_name="Physician Model")
             mlflow.log_artifact('confusion_matrix.png')
+            mlflow.log_artifact('roc_curve.png')
+            # Save the model as a pickle file
+            with open("model.pkl", "wb") as pickle_file:
+                pickle.dump(model_xgb, pickle_file)
+
+            # Log the pickle file as an artifact in MLflow
+            mlflow.log_artifact("model.pkl")
 
             # fs.log_model(
             #                     model=LR_Classifier,
