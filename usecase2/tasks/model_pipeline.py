@@ -242,7 +242,9 @@ class model_training(Task):
          print('scoring done')
          print(len(test_pred.columns))
 
-         ans_test = test_pred.toPandas()
+         ans_test = test_pred.select('prediction')
+         print(ans_test)
+         ans_test = ans_test.toPandas()
 
          print('created test')
 
