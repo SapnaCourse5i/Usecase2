@@ -269,7 +269,7 @@ class model_training(Task):
             shap.summary_plot(shap_values, X_test.drop(self.conf['features']['id_col_list'],axis=1),show=False)
             plt.savefig('summary_plot.png')
             mlflow.log_artifact('summary_plot.png')
-            
+
         return X_test,y_test,X_val
     
 
@@ -286,6 +286,10 @@ class model_training(Task):
          test_pred = fs.score_batch("models:/usecase_model/latest", spark_test)
          print('scoring done')
          print(len(test_pred.columns))
+        #  y_test = y_test.reset_index()
+         appended_df = test_pred.union(y_test)
+         print(appended_df.columns)
+        #  df_pred = test_pred.withColumn("actual", col("col2") * numpy_array)
 
         #  ans_test = test_pred.select('prediction')
         #  print(ans_test)
