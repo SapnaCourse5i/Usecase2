@@ -285,9 +285,10 @@ class model_training(Task):
         # # fs.create_training_set looks up features in model_feature_lookups that match the primary key from inference_data_df
         #  training_set = fs.create_training_set(inference_data_df, model_feature_lookups, label=self.conf['features']['target_col'])
         #  df= training_set.load_df().toPandas()
+         X_test1=fs.read_table(self.conf['feature-store']['table_name'])
          spark = SparkSession.builder.appName("CSV Loading Example").getOrCreate()
-         spark_test = spark.createDataFrame(X_test)
-         print(spark_test.show(2))
+         spark_test = spark.createDataFrame(X_test1)
+         print(len(spark_test.columns))
          
          print('scoring now')
          test_pred = fs.score_batch("models:/usecase_model/latest", spark_test)
