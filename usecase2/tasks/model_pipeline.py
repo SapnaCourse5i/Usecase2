@@ -55,13 +55,13 @@ class model_training(Task):
         model_feature_lookups = [FeatureLookup(table_name=table_name, lookup_key=lookup_key)]
                 
         # fs.create_training_set looks up features in model_feature_lookups that match the primary key from inference_data_df
-        training_set = fs.create_training_set(inference_data_df, model_feature_lookups, label=target,exclude_columns=lookup_key)
+        training_set = fs.create_training_set(inference_data_df, model_feature_lookups, label=target)
         df= training_set.load_df().toPandas()
 
         # X_train, X_val, y_train, y_val,X_test,y_test=self.train_test_val_split(df_input,test_split,val_split)
         
 
-        X = df.drop(target, axis=1)
+        X = df.drop(self.conf['features']['id_target_col_list'], axis=1)
         y = df[target]
 
         # Performing the train-test split
