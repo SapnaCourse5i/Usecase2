@@ -272,11 +272,11 @@ class model_training(Task):
         #     plt.savefig('summary_plot.png')
         #     mlflow.log_artifact('summary_plot.png')
 
-        return X_test,y_test,X_val
+        return X_test,y_test,X_val,df_input_spark.select(self.conf['features']['id_col_list'])
     
 
     def inference(self):
-         X_test,y_test,X_val=self.train_model()
+         X_test,y_test,X_val,inference_data_df=self.train_model()
         #  print(X_test.shape)
         #  print(X_test.columns)
         #  print(y_test)
@@ -293,7 +293,7 @@ class model_training(Task):
          print(X_test1.count())
          
          print('scoring now')
-         test_pred = fs.score_batch("models:/usecase_model/latest", batch_df)
+         test_pred = fs.score_batch("models:/usecase_model/latest", inference_data_df)
          print('scoring done')
          print(len(test_pred.columns))
         #  y_test = y_test.reset_index()
