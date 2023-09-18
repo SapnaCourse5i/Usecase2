@@ -234,12 +234,12 @@ class model_training(Task):
          print(X_test.columns)
          print(y_test)
          spark = SparkSession.builder.appName("CSV Loading Example").getOrCreate()
-         spark_test = spark.createDataFrame(X_test)
+         spark_test = spark.createDataFrame(X_test.drop(self.conf['features']['id_col_list']))
          print(spark_test.show(2))
          
-
+         print('scoring now')
          test_pred = fs.score_batch("models:/usecase_model/latest", spark_test)
-         print(test_pred)
+         print('scoring done')
 
          ans_test = test_pred.toPandas()
 
