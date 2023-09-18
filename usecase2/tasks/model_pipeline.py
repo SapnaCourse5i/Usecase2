@@ -202,6 +202,13 @@ class model_training(Task):
             fpr, tpr, threshold = roc_curve(y_test,y_pred_test)
             roc_auc = auc(fpr, tpr)
             cm=self.confusion_metrics(y_test,y_pred_test)
+            fs.log_model(
+                                model=model_xgb,
+                                artifact_path="usecase",
+                                flavor=mlflow.xgboost,
+                                # training_set=df,
+                                registered_model_name="usecase_model",
+                                )
             
             
             #log all metrics
@@ -210,24 +217,18 @@ class model_training(Task):
             mlflow.log_metrics(self.metrics(y_train,y_pred_train,y_val,y_pred_val,y_test,y_pred_test))
             self.roc_curve(y_test, y_pred_probs)
 
-            mlflow.xgboost.log_model(xgb_model=model_xgb,artifact_path="usecase2",registered_model_name="Physician Model")
+            # mlflow.xgboost.log_model(xgb_model=model_xgb,artifact_path="usecase2",registered_model_name="Physician Model")
             mlflow.log_artifact('confusion_matrix.png')
             mlflow.log_artifact('roc_curve.png')
-            fs.log_model(
-                                model=model_xgb,
-                                artifact_path="usecase",
-                                flavor=mlflow.xgboost,
-                                # training_set=df,
-                                registered_model_name="usecase_model",
-                                )
+            
             # Save the model as a pickle file
             # with open("model.pkl", "wb") as pickle_file:
             #     pickle.dump(model_xgb, pickle_file)
 
             # # Log the pickle file as an artifact in MLflow
             # mlflow.log_artifact("model.pkl")
-            return X_test,model_xgb
-    def inference(self,model_xgb):
+            return X_test
+    def inference(self):
          X_test=self.train_model()
          spark = SparkSession.builder.appName("CSV Loading Example").getOrCreate()
          spark_test = spark.createDataFrame(X_test)
@@ -252,7 +253,7 @@ class model_training(Task):
 
     def launch(self):
         self.logger.info("Launching Model Training task")
-        self.train_model()
+        self.inference()
         self.logger.info("Model Training finished!")
 
 # if you're using python_wheel_task, you'll need the entrypoint function to be used in setup.py
