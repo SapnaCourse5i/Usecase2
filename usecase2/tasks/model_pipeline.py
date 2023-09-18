@@ -289,7 +289,7 @@ class model_training(Task):
          spark = SparkSession.builder.appName("CSV Loading Example").getOrCreate()
         #  spark_test = spark.createDataFrame(X_test1)
          print(len(X_test1.columns))
-         print(X_test1.display(2))
+         print(X_test1.count())
          
          print('scoring now')
          test_pred = fs.score_batch("models:/usecase_model/latest", X_test1)
