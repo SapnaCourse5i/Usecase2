@@ -230,10 +230,16 @@ class model_training(Task):
             return X_test,y_test
     def inference(self):
          X_test,y_test=self.train_model()
+         print(X_test.shape)
+         print(X_test.columns)
+         print(y_test)
          spark = SparkSession.builder.appName("CSV Loading Example").getOrCreate()
          spark_test = spark.createDataFrame(X_test)
+         print(spark_test.show(2))
+         
 
          test_pred = fs.score_batch("models:/usecase_model/latest", spark_test)
+         print(test_pred)
 
          ans_test = test_pred.toPandas()
 
