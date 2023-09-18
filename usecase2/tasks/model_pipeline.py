@@ -288,7 +288,7 @@ class model_training(Task):
          X_test1=fs.read_table(self.conf['feature-store']['table_name'])
          spark = SparkSession.builder.appName("CSV Loading Example").getOrCreate()
          spark_test = spark.createDataFrame(inference_data_df)
-         batch_df=X_test[self.conf['features']['id_col_list']]
+        #  batch_df=X_test[self.conf['features']['id_col_list']]
          print(len(X_test1.columns))
          print(X_test1.count())
          
