@@ -217,7 +217,7 @@ class model_training(Task):
                                 model=model_xgb,
                                 artifact_path="usecase",
                                 flavor=mlflow.xgboost,
-                                training_set=df,
+                                # training_set=df,
                                 registered_model_name="usecase_model",
                                 )
             # Save the model as a pickle file
