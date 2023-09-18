@@ -260,14 +260,24 @@ class model_training(Task):
 
             # Log the pickle file as an artifact in MLflow
             mlflow.log_artifact("model.pkl")
-        return X_test,y_test,X_val,model_xgb,s3
+
+             # Create a SHAP explanation
+            explainer = shap.Explainer(model_xgb, X_val.drop(self.conf['features']['id_col_list'],axis=1))
+            shap_values = explainer(X_test.drop(self.conf['features']['id_col_list'],axis=1))
+            # Visualize the SHAP explanation
+            # shap.plots.bar(shap_values[1],show=False)
+            shap.summary_plot(shap_values, X_test.drop(self.conf['features']['id_col_list'],axis=1),show=False)
+            plt.savefig('summary_plot.png')
+            mlflow.log_artifact('summary_plot.png')
+            
+        return X_test,y_test,X_val
     
 
     def inference(self):
-         X_test,y_test,X_val,model,s3=self.train_model()
-         print(X_test.shape)
-         print(X_test.columns)
-         print(y_test)
+         X_test,y_test,X_val=self.train_model()
+        #  print(X_test.shape)
+        #  print(X_test.columns)
+        #  print(y_test)
          spark = SparkSession.builder.appName("CSV Loading Example").getOrCreate()
          spark_test = spark.createDataFrame(X_test)
          print(spark_test.show(2))
@@ -281,7 +291,7 @@ class model_training(Task):
         #  print(ans_test)
         #  ans_test = ans_test.toPandas()
 
-         print('created test')
+        #  print('created test')
 
         #  y_test = y_test.reset_index()
 
@@ -298,27 +308,25 @@ class model_training(Task):
         #  top_features_df=self.calculate_top_shap_features(X_test,self.conf['features']['id_Col_list'],model=model,n=3)
         #  print(top_features_df.head())
 
-         # Create a SHAP explanation
-         explainer = shap.Explainer(model, X_val.drop(self.conf['features']['id_col_list'],axis=1))
-         shap_values = explainer(X_test.drop(self.conf['features']['id_col_list'],axis=1))
+        
 
          # Visualize the SHAP explanation
         #  shap.plots.bar(shap_values[1],show=False)
-         shap.summary_plot(shap_values, X_test,show=False)
-         fig1=plt.savefig('summary_plot.png')
+        #  shap.summary_plot(shap_values, X_test,show=False)
+        #  fig1=plt.savefig('summary_plot.png')
 
 
          
         # Save the output to a Bytes IO object
-         png_data = io.BytesIO()
-         fig1.savefig(png_data)
+        #  png_data = io.BytesIO()
+        #  fig1.savefig(png_data)
         # Seek back to the start so boto3 uploads from the start of the data
         #  bits.seek(0)
 
         # Upload the data to S3
         #  s3 = boto3.client('s3')
          
-         s3.put_object(Bucket=[self.conf['s3']['bucket_name']], Key=self.conf['s3']['figure_path'], Body=png_data)
+        #  s3.put_object(Bucket=[self.conf['s3']['bucket_name']], Key=self.conf['s3']['figure_path'], Body=png_data)
 
 
            
