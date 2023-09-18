@@ -234,7 +234,7 @@ class model_training(Task):
          print(X_test.columns)
          print(y_test)
          spark = SparkSession.builder.appName("CSV Loading Example").getOrCreate()
-         spark_test = spark.createDataFrame(X_test.drop(self.conf['features']['id_col_list'],axis=1))
+         spark_test = spark.createDataFrame(X_test)
          print(spark_test.show(2))
          
          print('scoring now')
@@ -242,6 +242,8 @@ class model_training(Task):
          print('scoring done')
 
          ans_test = test_pred.toPandas()
+
+         print('created test')
 
          y_test = y_test.reset_index()
 
