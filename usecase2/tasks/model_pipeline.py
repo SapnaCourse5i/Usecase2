@@ -69,7 +69,7 @@ class model_training(Task):
 
         # Performing the train-val split using train data
         X_train, X_val, y_train, y_val = train_test_split(X_train_pre, y_train_pre, test_size=val_split, random_state=42, stratify= y_train_pre)
-        return X_train, X_val, y_train, y_val,X_test,y_test
+        return df,X_train, X_val, y_train, y_val,X_test,y_test
     
     def metrics(self,y_train,y_pred_train,y_val,y_pred_val,y_test,y_pred):
 
@@ -184,7 +184,7 @@ class model_training(Task):
 
         target=self.conf['features']['target_col']
 
-        X_train, X_val, y_train, y_val,X_test,y_test=self.train_test_val_split(target,self.conf['split']['test_split'],self.conf['split']['val_split'],self.conf['feature-store']['table_name'],self.conf['feature-store']['lookup_key'],inference_data_df)
+        df,X_train, X_val, y_train, y_val,X_test,y_test=self.train_test_val_split(target,self.conf['split']['test_split'],self.conf['split']['val_split'],self.conf['feature-store']['table_name'],self.conf['feature-store']['lookup_key'],inference_data_df)
         mlflow.set_experiment(self.conf['Mlflow']['experiment_name'])
         with mlflow.start_run() as run:
             # print(self.conf['params'])
@@ -213,12 +213,40 @@ class model_training(Task):
             mlflow.xgboost.log_model(xgb_model=model_xgb,artifact_path="usecase2",registered_model_name="Physician Model")
             mlflow.log_artifact('confusion_matrix.png')
             mlflow.log_artifact('roc_curve.png')
+            fs.log_model(
+                                model=model_xgb,
+                                artifact_path="usecase",
+                                flavor=mlflow.xgboost,
+                                training_set=df,
+                                registered_model_name="usecase_model",
+                                )
             # Save the model as a pickle file
-            with open("model.pkl", "wb") as pickle_file:
-                pickle.dump(model_xgb, pickle_file)
+            # with open("model.pkl", "wb") as pickle_file:
+            #     pickle.dump(model_xgb, pickle_file)
 
-            # Log the pickle file as an artifact in MLflow
-            mlflow.log_artifact("model.pkl")
+            # # Log the pickle file as an artifact in MLflow
+            # mlflow.log_artifact("model.pkl")
+            return X_test,model_xgb
+    def inference(self,model_xgb):
+         X_test=self.train_model()
+         spark = SparkSession.builder.appName("CSV Loading Example").getOrCreate()
+         spark_test = spark.createDataFrame(X_test)
+
+         test_pred = fs.score_batch("models:/usecase_model/latest", spark_test)
+
+         ans_test = test_pred.toPandas()
+
+         y_test = y_test.reset_index()
+
+         y_test.drop('index',axis=1,inplace=True)
+
+         ans_test['actual'] = y_test
+
+         output_df = ans_test[['prediction','actual']]
+
+         print(confusion_matrix(output_df['prediction'],output_df['actual']))
+
+         print(accuracy_score(output_df['prediction'],output_df['actual'])*100)
 
            
 
