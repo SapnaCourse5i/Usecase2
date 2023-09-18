@@ -234,7 +234,7 @@ class model_training(Task):
          print(X_test.columns)
          print(y_test)
          spark = SparkSession.builder.appName("CSV Loading Example").getOrCreate()
-         spark_test = spark.createDataFrame(X_test.drop(self.conf['features']['id_col_list']))
+         spark_test = spark.createDataFrame(X_test.drop(self.conf['features']['id_col_list'],axis=1))
          print(spark_test.show(2))
          
          print('scoring now')
