@@ -240,7 +240,7 @@ class model_training(Task):
          print('scoring now')
          test_pred = fs.score_batch("models:/usecase_model/latest", spark_test)
          print('scoring done')
-         print(test_pred.display(2))
+         print(len(test_pred.columns))
 
          ans_test = test_pred.toPandas()
 
