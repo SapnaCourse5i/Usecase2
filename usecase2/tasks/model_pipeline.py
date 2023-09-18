@@ -69,7 +69,7 @@ class model_training(Task):
 
         # Performing the train-val split using train data
         X_train, X_val, y_train, y_val = train_test_split(X_train_pre, y_train_pre, test_size=val_split, random_state=42, stratify= y_train_pre)
-        return df,X_train, X_val, y_train, y_val,X_test,y_test
+        return df,X_train, X_val, y_train, y_val,X_test,y_test,training_set
     
     def metrics(self,y_train,y_pred_train,y_val,y_pred_val,y_test,y_pred):
 
@@ -184,7 +184,7 @@ class model_training(Task):
 
         target=self.conf['features']['target_col']
 
-        df,X_train, X_val, y_train, y_val,X_test,y_test=self.train_test_val_split(target,self.conf['split']['test_split'],self.conf['split']['val_split'],self.conf['feature-store']['table_name'],self.conf['feature-store']['lookup_key'],inference_data_df)
+        df,X_train, X_val, y_train, y_val,X_test,y_test,training_set=self.train_test_val_split(target,self.conf['split']['test_split'],self.conf['split']['val_split'],self.conf['feature-store']['table_name'],self.conf['feature-store']['lookup_key'],inference_data_df)
         mlflow.set_experiment(self.conf['Mlflow']['experiment_name'])
         with mlflow.start_run() as run:
             # print(self.conf['params'])
@@ -206,7 +206,7 @@ class model_training(Task):
                                 model=model_xgb,
                                 artifact_path="usecase",
                                 flavor=mlflow.xgboost,
-                                # training_set=df,
+                                training_set=training_set,
                                 registered_model_name="usecase_model",
                                 )
             
