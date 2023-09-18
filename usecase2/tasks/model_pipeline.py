@@ -61,7 +61,7 @@ class model_training(Task):
         # X_train, X_val, y_train, y_val,X_test,y_test=self.train_test_val_split(df_input,test_split,val_split)
         
 
-        X = df.drop(self.conf['features']['id_target_col_list'], axis=1)
+        X = df.drop(target, axis=1)
         y = df[target]
 
         # Performing the train-test split
@@ -227,9 +227,9 @@ class model_training(Task):
 
             # # Log the pickle file as an artifact in MLflow
             # mlflow.log_artifact("model.pkl")
-            return X_test
+            return X_test,y_test
     def inference(self):
-         X_test=self.train_model()
+         X_test,y_test=self.train_model()
          spark = SparkSession.builder.appName("CSV Loading Example").getOrCreate()
          spark_test = spark.createDataFrame(X_test)
 
