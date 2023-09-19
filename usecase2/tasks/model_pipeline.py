@@ -277,8 +277,9 @@ class model_training(Task):
                     aws_secret_access_key=aws_secret_key, 
                     region_name='ap-south-1')
 
-        s3_object_key = self.conf['cleaned_data']['preprocessed_df_path'] 
+        s3_object_key = self.conf['s3']['X_test'] 
         s3.Object(self.conf['s3']['bucket_name'], s3_object_key).put(Body=csv_content)
+        print('uploaded file')
         # mlflow.set_experiment(self.conf['Mlflow']['experiment_name'])
         # with mlflow.start_run() as run:
         #     # print(self.conf['params'])
