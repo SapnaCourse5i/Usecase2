@@ -318,11 +318,11 @@ class model_training(Task):
         #     plt.savefig('summary_plot.png')
         #     mlflow.log_artifact('summary_plot.png')
 
-        return X_test,y_test,X_val,df_input_spark.select(self.conf['features']['id_col_list']),model_xgb
+        return X_test,y_test,X_val,df_input_spark.select(self.conf['features']['id_col_list'])
     
 
     def inference(self):
-         X_test,y_test,X_val,inference_data_df,model_xgb=self.train_model()
+         X_test,y_test,X_val,inference_data_df=self.train_model()
         #  print(X_test.shape)
         #  print(X_test.columns)
         #  print(y_test)
