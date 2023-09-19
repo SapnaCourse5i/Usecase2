@@ -245,7 +245,7 @@ class model_training(Task):
                 region_name='ap-south-1')
         
         bucket_name =  self.conf['s3']['bucket_name']
-        csv_file_key = self.conf['cleaned_data']['final_features_df_path']
+        csv_file_key = self.conf['cleaned_data']['preprocessed_df_path']
         # print('start')
 
         
@@ -359,9 +359,9 @@ class model_training(Task):
          print(test_pred.count())
 
 
-         ans_test = test_pred.toPandas()
+        #  ans_test = test_pred.toPandas()
 
-         print('converted to pandas')
+        #  print('converted to pandas')
         #  y_pred=model_xgb.predict(X_test.drop(self.conf['features']['id_col_list'],axis=1))
         #  y_test = y_test.reset_index()
         #  appended_df = test_pred.union(y_test)
