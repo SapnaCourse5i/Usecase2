@@ -302,7 +302,7 @@ class model_training(Task):
                                 model=model_xgb,
                                 artifact_path="usecase",
                                 flavor=mlflow.sklearn,
-                                training_set= df_train_spark,
+                                training_set= training_set,
                                 registered_model_name="usecase_model",
                                 )
             
