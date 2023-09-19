@@ -284,7 +284,8 @@ class model_training(Task):
         with mlflow.start_run() as run:
             # print(self.conf['params'])
             
-            model_xgb = xgb.XGBClassifier(**self.conf['params'])
+            # model_xgb = xgb.XGBClassifier(**self.conf['params'])
+            model_xgb=LogisticRegression()
 
             model_xgb.fit(X_train.drop(self.conf['features']['id_col_list'], axis=1, errors='ignore'), y_train)
             y_pred_train = model_xgb.predict(X_train.drop(self.conf['features']['id_col_list'], axis=1, errors='ignore'))
@@ -300,7 +301,7 @@ class model_training(Task):
             fs.log_model(
                                 model=model_xgb,
                                 artifact_path="usecase",
-                                flavor=mlflow.xgboost,
+                                flavor=mlflow.sklearn,
                                 training_set=training_set,
                                 registered_model_name="usecase_model",
                                 )
