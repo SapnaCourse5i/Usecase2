@@ -54,6 +54,20 @@ fs = feature_store.FeatureStoreClient()
 class model_training(Task):
 
     def train_test_val_split(self,target,test_split,val_split,table_name,lookup_key,inference_data_df):
+        """
+            Split data into train,test,validation
+
+            Parameters:
+            - target: The true labels (ground truth).
+            - test_split: test split ratio.
+            - val_split: validation split ratio.
+            - table name - feature store table name
+            - lookup key - primary key
+            - inference_data_df - dataframe with lookup key and target column
+
+            Returns:
+            - X_train , X_test , X_val , y_train , y_test , y_val 
+        """
 
 
         model_feature_lookups = [FeatureLookup(table_name=table_name, lookup_key=lookup_key)]
@@ -76,6 +90,17 @@ class model_training(Task):
         return df,X_train, X_val, y_train, y_val,X_test,y_test,training_set
     
     def metrics(self,y_train,y_pred_train,y_val,y_pred_val,y_test,y_pred):
+        """
+            Logs f1_Score and accuracy in MLflow.
+
+            Parameters:
+            - y_test: The true labels (ground truth).
+            - y_pred: The predicted labels (model predictions).
+            - run_name: The name for the MLflow run.
+
+            Returns:
+            - f1score and accuracy
+        """
 
         f1_train = f1_score(y_train, y_pred_train)
         accuracy_train = accuracy_score(y_train, y_pred_train)
@@ -152,6 +177,18 @@ class model_training(Task):
     
       
     def calculate_top_shap_features(df, id_col_list, model, n):
+        """
+            Calculate top  n features.
+
+            Parameters:
+            - df : dataframe.
+            - id_col_list: lookup key.
+            - model : model classifier
+            - n : no of features
+
+            Returns:
+            - top n features
+            """
     # Initialize SHAP explainer
         explainer = shap.Explainer(model)
         
@@ -187,6 +224,15 @@ class model_training(Task):
 
     
     def train_model(self):
+
+
+        """
+            Train model on Xgboost 
+            Evaluate the model
+            Log the model using mlflow
+            Inference the model.
+
+        """
         spark = SparkSession.builder.appName("CSV Loading Example").getOrCreate()
 
         dbutils = DBUtils(spark)
@@ -297,7 +343,7 @@ class model_training(Task):
          print('scoring done')
          print(len(test_pred.columns))
          print(test_pred.count())
-         y_pred=model_xgb.predict(X_test.drop(self.conf['features']['id_col_list']))
+         y_pred=model_xgb.predict(X_test.drop(self.conf['features']['id_col_list'],axis=1))
         #  y_test = y_test.reset_index()
         #  appended_df = test_pred.union(y_test)
         #  print(appended_df.columns)
