@@ -15,7 +15,6 @@ PACKAGE_REQUIREMENTS = ["pyyaml"]
 LOCAL_REQUIREMENTS = [
     "pyspark==3.2.1",
     "delta-spark==1.1.0",
-    "scikit-learn",
     "mlflow",
     "boto3",
     "delta-spark==1.1.0",
@@ -25,8 +24,8 @@ LOCAL_REQUIREMENTS = [
     #"databricks-registry-webhooks",
     "evidently",
     "pandas==1.5.3",
-    "urllib3",
-    "xgboost==1.6.2"
+    "urllib3"
+    # "xgboost==1.6.2"
     
 ]
 

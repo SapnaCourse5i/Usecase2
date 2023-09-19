@@ -267,7 +267,7 @@ class model_training(Task):
     
 
         df,X_train, X_val, y_train, y_val,X_test,y_test,training_set=self.train_test_val_split(target,self.conf['split']['test_split'],self.conf['split']['val_split'],self.conf['feature-store']['table_name'],self.conf['feature-store']['lookup_key'],inference_data_df)
-
+        df_train_spark = spark.createDataFrame(X_train.drop(self.conf['features']['id_col_list'],axis=1))
 
         # csv_buffer = BytesIO()
         # X_test.to_csv(csv_buffer, index=False)
@@ -302,7 +302,7 @@ class model_training(Task):
                                 model=model_xgb,
                                 artifact_path="usecase",
                                 flavor=mlflow.sklearn,
-                                training_set=training_set,
+                                training_set= df_train_spark,
                                 registered_model_name="usecase_model",
                                 )
             
@@ -355,13 +355,13 @@ class model_training(Task):
          print(X_test1.count())
          
          print('scoring now')
-         test_pred = fs.score_batch("models:/usecase_model/latest", X_test1)
+         test_pred = fs.score_batch("models:/usecase_model/latest", X_test1.select(self.conf['features']['id_col_list']))
          print('scoring done')
          print(len(test_pred.columns))
          print(test_pred.count())
 
 
-         ans_test = test_pred.toPandas()
+        #  ans_test = test_pred.toPandas()
 
          print('converted to pandas')
         #  y_pred=model_xgb.predict(X_test.drop(self.conf['features']['id_col_list'],axis=1))
