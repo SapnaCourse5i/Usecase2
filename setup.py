@@ -16,8 +16,17 @@ LOCAL_REQUIREMENTS = [
     "pyspark==3.2.1",
     "delta-spark==1.1.0",
     "scikit-learn",
-    "pandas",
-    "mlflow"
+    "mlflow",
+    "boto3",
+    "delta-spark==1.1.0",
+    "scikit-learn==1.2.0",
+    "databricks-sdk",
+    "databricks-feature-store",
+    #"databricks-registry-webhooks",
+    "evidently",
+    "pandas==1.5.3",
+    "urllib3",
+    "xgboost==1.6.2"
     
 ]
 
