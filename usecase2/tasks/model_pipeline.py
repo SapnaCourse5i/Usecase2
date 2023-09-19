@@ -264,8 +264,21 @@ class model_training(Task):
 
 
         target=self.conf['features']['target_col']
+    
 
         df,X_train, X_val, y_train, y_val,X_test,y_test,training_set=self.train_test_val_split(target,self.conf['split']['test_split'],self.conf['split']['val_split'],self.conf['feature-store']['table_name'],self.conf['feature-store']['lookup_key'],inference_data_df)
+
+
+        csv_buffer = BytesIO()
+        X_test.to_csv(csv_buffer, index=False)
+        csv_content = csv_buffer.getvalue()
+
+        s3 = boto3.resource("s3",aws_access_key_id=aws_access_key, 
+                    aws_secret_access_key=aws_secret_key, 
+                    region_name='ap-south-1')
+
+        s3_object_key = self.conf['cleaned_data']['preprocessed_df_path'] 
+        s3.Object(self.conf['s3']['bucket_name'], s3_object_key).put(Body=csv_content)
         # mlflow.set_experiment(self.conf['Mlflow']['experiment_name'])
         # with mlflow.start_run() as run:
         #     # print(self.conf['params'])
