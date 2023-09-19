@@ -361,7 +361,7 @@ class model_training(Task):
          print(test_pred.count())
 
 
-        #  ans_test = test_pred.toPandas()
+         ans_test = test_pred.toPandas()
 
          print('converted to pandas')
         #  y_pred=model_xgb.predict(X_test.drop(self.conf['features']['id_col_list'],axis=1))
