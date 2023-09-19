@@ -266,57 +266,57 @@ class model_training(Task):
         target=self.conf['features']['target_col']
 
         df,X_train, X_val, y_train, y_val,X_test,y_test,training_set=self.train_test_val_split(target,self.conf['split']['test_split'],self.conf['split']['val_split'],self.conf['feature-store']['table_name'],self.conf['feature-store']['lookup_key'],inference_data_df)
-        mlflow.set_experiment(self.conf['Mlflow']['experiment_name'])
-        with mlflow.start_run() as run:
-            # print(self.conf['params'])
+        # mlflow.set_experiment(self.conf['Mlflow']['experiment_name'])
+        # with mlflow.start_run() as run:
+        #     # print(self.conf['params'])
             
-            model_xgb = xgb.XGBClassifier(**self.conf['params'])
+        #     model_xgb = xgb.XGBClassifier(**self.conf['params'])
 
-            model_xgb.fit(X_train.drop(self.conf['features']['id_col_list'], axis=1, errors='ignore'), y_train)
-            y_pred_train = model_xgb.predict(X_train.drop(self.conf['features']['id_col_list'], axis=1, errors='ignore'))
-            y_pred_val = model_xgb.predict(X_val.drop(self.conf['features']['id_col_list'], axis=1, errors='ignore'))
-            y_pred_test = model_xgb.predict(X_test.drop(self.conf['features']['id_col_list'], axis=1, errors='ignore'))
-            y_val_probs = model_xgb.predict_proba(X_val.drop(self.conf['features']['id_col_list'], axis=1, errors='ignore'))
-            y_pred_probs = model_xgb.predict_proba(X_test.drop(self.conf['features']['id_col_list'], axis=1, errors='ignore'))
-            y_train_probs = model_xgb.predict_proba(X_train.drop(self.conf['features']['id_col_list'], axis=1, errors='ignore'))
+        #     model_xgb.fit(X_train.drop(self.conf['features']['id_col_list'], axis=1, errors='ignore'), y_train)
+        #     y_pred_train = model_xgb.predict(X_train.drop(self.conf['features']['id_col_list'], axis=1, errors='ignore'))
+        #     y_pred_val = model_xgb.predict(X_val.drop(self.conf['features']['id_col_list'], axis=1, errors='ignore'))
+        #     y_pred_test = model_xgb.predict(X_test.drop(self.conf['features']['id_col_list'], axis=1, errors='ignore'))
+        #     y_val_probs = model_xgb.predict_proba(X_val.drop(self.conf['features']['id_col_list'], axis=1, errors='ignore'))
+        #     y_pred_probs = model_xgb.predict_proba(X_test.drop(self.conf['features']['id_col_list'], axis=1, errors='ignore'))
+        #     y_train_probs = model_xgb.predict_proba(X_train.drop(self.conf['features']['id_col_list'], axis=1, errors='ignore'))
             
-            fpr, tpr, threshold = roc_curve(y_test,y_pred_test)
-            roc_auc = auc(fpr, tpr)
-            cm=self.confusion_metrics(y_test,y_pred_test)
-            fs.log_model(
-                                model=model_xgb,
-                                artifact_path="usecase",
-                                flavor=mlflow.xgboost,
-                                training_set=training_set,
-                                registered_model_name="usecase_model",
-                                )
+        #     fpr, tpr, threshold = roc_curve(y_test,y_pred_test)
+        #     roc_auc = auc(fpr, tpr)
+        #     cm=self.confusion_metrics(y_test,y_pred_test)
+        #     fs.log_model(
+        #                         model=model_xgb,
+        #                         artifact_path="usecase",
+        #                         flavor=mlflow.xgboost,
+        #                         training_set=training_set,
+        #                         registered_model_name="usecase_model",
+        #                         )
             
             
-            #log all metrics
-            mlflow.log_metric("roc_auc",roc_auc)
+        #     #log all metrics
+        #     mlflow.log_metric("roc_auc",roc_auc)
             
-            mlflow.log_metrics(self.metrics(y_train,y_pred_train,y_val,y_pred_val,y_test,y_pred_test))
-            self.roc_curve(y_test, y_pred_probs)
+        #     mlflow.log_metrics(self.metrics(y_train,y_pred_train,y_val,y_pred_val,y_test,y_pred_test))
+        #     self.roc_curve(y_test, y_pred_probs)
 
-            # mlflow.xgboost.log_model(xgb_model=model_xgb,artifact_path="usecase2",registered_model_name="Physician Model")
-            mlflow.log_artifact('confusion_matrix.png')
-            mlflow.log_artifact('roc_curve.png')
+        #     # mlflow.xgboost.log_model(xgb_model=model_xgb,artifact_path="usecase2",registered_model_name="Physician Model")
+        #     mlflow.log_artifact('confusion_matrix.png')
+        #     mlflow.log_artifact('roc_curve.png')
             
-            # Save the model as a pickle file
-            with open("model.pkl", "wb") as pickle_file:
-                pickle.dump(model_xgb, pickle_file)
+        #     # Save the model as a pickle file
+        #     with open("model.pkl", "wb") as pickle_file:
+        #         pickle.dump(model_xgb, pickle_file)
 
-            # Log the pickle file as an artifact in MLflow
-            mlflow.log_artifact("model.pkl")
+        #     # Log the pickle file as an artifact in MLflow
+        #     mlflow.log_artifact("model.pkl")
 
-             # Create a SHAP explanation
-            explainer = shap.Explainer(model_xgb, X_val.drop(self.conf['features']['id_col_list'],axis=1))
-            shap_values = explainer(X_test.drop(self.conf['features']['id_col_list'],axis=1))
-            # Visualize the SHAP explanation
-            # shap.plots.bar(shap_values[1],show=False)
-            shap.summary_plot(shap_values, X_test.drop(self.conf['features']['id_col_list'],axis=1),show=False)
-            plt.savefig('summary_plot.png')
-            mlflow.log_artifact('summary_plot.png')
+        #      # Create a SHAP explanation
+        #     explainer = shap.Explainer(model_xgb, X_val.drop(self.conf['features']['id_col_list'],axis=1))
+        #     shap_values = explainer(X_test.drop(self.conf['features']['id_col_list'],axis=1))
+        #     # Visualize the SHAP explanation
+        #     # shap.plots.bar(shap_values[1],show=False)
+        #     shap.summary_plot(shap_values, X_test.drop(self.conf['features']['id_col_list'],axis=1),show=False)
+        #     plt.savefig('summary_plot.png')
+        #     mlflow.log_artifact('summary_plot.png')
 
         return X_test,y_test,X_val,df_input_spark.select(self.conf['features']['id_col_list']),model_xgb
     
@@ -333,17 +333,22 @@ class model_training(Task):
         #  df= training_set.load_df().toPandas()
          X_test1=fs.read_table(self.conf['feature-store']['table_name'])
          spark = SparkSession.builder.appName("CSV Loading Example").getOrCreate()
-        #  spark_test = spark.createDataFrame(inference_data_df)
+         spark_test = spark.createDataFrame(X_test)
         #  batch_df=X_test[self.conf['features']['id_col_list']]
-         print(len(X_test1.columns))
-         print(X_test1.count())
+         print(len(spark_test.columns))
+         print(spark_test.count())
          
          print('scoring now')
-         test_pred = fs.score_batch("models:/usecase_model/latest", inference_data_df)
+         test_pred = fs.score_batch("models:/usecase_model/latest", spark_test)
          print('scoring done')
          print(len(test_pred.columns))
          print(test_pred.count())
-         y_pred=model_xgb.predict(X_test.drop(self.conf['features']['id_col_list'],axis=1))
+
+
+         ans_test = test_pred.toPandas()
+
+         print('converted to pandas')
+        #  y_pred=model_xgb.predict(X_test.drop(self.conf['features']['id_col_list'],axis=1))
         #  y_test = y_test.reset_index()
         #  appended_df = test_pred.union(y_test)
         #  print(appended_df.columns)
@@ -361,7 +366,7 @@ class model_training(Task):
         #  y_pred = predictions_train.select(['prediction']).collect()
 
 
-         print(classification_report(y_test, y_pred))
+        #  print(classification_report(y_test, y_pred))
         #  df_pred = test_pred.withColumn("actual", col("col2") * numpy_array)
 
         #  ans_test = test_pred.select('prediction')
