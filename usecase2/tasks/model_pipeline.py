@@ -73,7 +73,7 @@ class model_training(Task):
         model_feature_lookups = [FeatureLookup(table_name=table_name, lookup_key=lookup_key)]
                 
         # fs.create_training_set looks up features in model_feature_lookups that match the primary key from inference_data_df
-        training_set = fs.create_training_set(inference_data_df, model_feature_lookups, label=target)
+        training_set = fs.create_training_set(inference_data_df, model_feature_lookups, label=target,exclude_columns=lookup_key)
         df= training_set.load_df().toPandas()
 
         # X_train, X_val, y_train, y_val,X_test,y_test=self.train_test_val_split(df_input,test_split,val_split)
@@ -267,7 +267,7 @@ class model_training(Task):
     
 
         df,X_train, X_val, y_train, y_val,X_test,y_test,training_set=self.train_test_val_split(target,self.conf['split']['test_split'],self.conf['split']['val_split'],self.conf['feature-store']['table_name'],self.conf['feature-store']['lookup_key'],inference_data_df)
-        df_train_spark = spark.createDataFrame(X_train.drop(self.conf['features']['id_col_list'],axis=1))
+        # df_train_spark = spark.createDataFrame(X_train.drop(self.conf['features']['id_col_list'],axis=1))
 
         # csv_buffer = BytesIO()
         # X_test.to_csv(csv_buffer, index=False)
@@ -355,7 +355,7 @@ class model_training(Task):
          print(X_test1.count())
          
          print('scoring now')
-         test_pred = fs.score_batch("models:/usecase_model/latest", X_test1.select(self.conf['features']['id_col_list']))
+         test_pred = fs.score_batch("models:/usecase_model/latest", X_test1)
          print('scoring done')
          print(len(test_pred.columns))
          print(test_pred.count())
