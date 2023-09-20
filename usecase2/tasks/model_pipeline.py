@@ -331,7 +331,8 @@ class model_training(Task):
             shap_values = explainer(X_test)
             # Visualize the SHAP explanation
             # shap.plots.bar(shap_values[1],show=False)
-            shap.summary_plot(shap_values, X_test.drop(self.conf['features']['id_col_list'],axis=1),show=False)
+            # shap.summary_plot(shap_values, X_test.drop(self.conf['features']['id_col_list'],axis=1),show=False)
+            shap.summary_plot(shap_values, X_test,show=False)
             plt.savefig('summary_plot.png')
             mlflow.log_artifact('summary_plot.png')
 
