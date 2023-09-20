@@ -30,7 +30,9 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, roc_curve, auc,classification_report
 import xgboost as xgb
-
+from evidently.pipeline.column_mapping import ColumnMapping
+from evidently.report import Report
+from evidently.metric_preset import DataDriftPreset
 
 from databricks import feature_store
 from pyspark.sql import SparkSession
@@ -222,23 +224,23 @@ class model_training(Task):
         
         return top_features_df
     
-    # def eval_drift(self,reference, production, column_mapping):
+    def eval_drift(self,reference, production):
 
-    #     column_mapping = ColumnMapping()
+        column_mapping = ColumnMapping()
 
-    #     column_mapping.numerical_features =  self.conf['features']['numerical_features']
-    #     column_mapping.categorical_features = self.conf['features']['categorical_features']
+        column_mapping.numerical_features =  self.conf['features']['numerical_features']
+        column_mapping.categorical_features = self.conf['features']['categorical_features']
 
-    #     data_drift_report = Report(metrics=[DataDriftPreset()])
-    #     data_drift_report.run(reference_data=reference, current_data=production, column_mapping=column_mapping)
-    #     report = data_drift_report.as_dict()
+        data_drift_report = Report(metrics=[DataDriftPreset()])
+        data_drift_report.run(reference_data=reference, current_data=production, column_mapping=column_mapping)
+        report = data_drift_report.as_dict()
 
-    #     drifts = []
+        drifts = []
 
-    #     for feature in column_mapping.numerical_features + column_mapping.categorical_features:
-    #         drifts.append((feature, report["metrics"][1]["result"]["drift_by_columns"][feature]["drift_score"]))
+        for feature in column_mapping.numerical_features + column_mapping.categorical_features:
+            drifts.append((feature, report["metrics"][1]["result"]["drift_by_columns"][feature]["drift_score"]))
 
-    #     return drifts
+        return drifts
         
 
     
@@ -305,14 +307,15 @@ class model_training(Task):
             
             model_xgb = xgb.XGBClassifier(**self.conf['params'])
             # model_xgb=LogisticRegression()
+            id_col_list=self.conf['features']['id_col_list']
 
-            model_xgb.fit(X_train.drop(self.conf['features']['id_col_list'], axis=1, errors='ignore'), y_train)
-            y_pred_train = model_xgb.predict(X_train.drop(self.conf['features']['id_col_list'], axis=1, errors='ignore'))
-            y_pred_val = model_xgb.predict(X_val.drop(self.conf['features']['id_col_list'], axis=1, errors='ignore'))
-            y_pred_test = model_xgb.predict(X_test.drop(self.conf['features']['id_col_list'], axis=1, errors='ignore'))
-            y_val_probs = model_xgb.predict_proba(X_val.drop(self.conf['features']['id_col_list'], axis=1, errors='ignore'))
-            y_pred_probs = model_xgb.predict_proba(X_test.drop(self.conf['features']['id_col_list'], axis=1, errors='ignore'))
-            y_train_probs = model_xgb.predict_proba(X_train.drop(self.conf['features']['id_col_list'], axis=1, errors='ignore'))
+            model_xgb.fit(X_train.drop(id_col_list, axis=1, errors='ignore'), y_train)
+            y_pred_train = model_xgb.predict(X_train.drop(id_col_list, axis=1, errors='ignore'))
+            y_pred_val = model_xgb.predict(X_val.drop(id_col_list, axis=1, errors='ignore'))
+            y_pred_test = model_xgb.predict(X_test.drop(id_col_list, axis=1, errors='ignore'))
+            y_val_probs = model_xgb.predict_proba(X_val.drop(id_col_list, axis=1, errors='ignore'))
+            y_pred_probs = model_xgb.predict_proba(X_test.drop(id_col_list, axis=1, errors='ignore'))
+            y_train_probs = model_xgb.predict_proba(X_train.drop(id_col_list, axis=1, errors='ignore'))
             
             fpr, tpr, threshold = roc_curve(y_test,y_pred_test)
             roc_auc = auc(fpr, tpr)
@@ -344,13 +347,13 @@ class model_training(Task):
             mlflow.log_artifact("model.pkl")
 
             #  Create a SHAP explanation
-            explainer = shap.Explainer(model_xgb, X_val.drop(self.conf['features']['id_col_list'],axis=1))
+            explainer = shap.Explainer(model_xgb, X_val.drop(id_col_list,axis=1))
             # explainer = shap.Explainer(model_xgb, X_val)
-            shap_values = explainer(X_test.drop(self.conf['features']['id_col_list'],axis=1))
+            shap_values = explainer(X_test.drop(id_col_list,axis=1))
             # shap_values = explainer(X_test)
             # Visualize the SHAP explanation
             # shap.plots.bar(shap_values[1],show=False)
-            shap.summary_plot(shap_values, X_test.drop(self.conf['features']['id_col_list'],axis=1),show=False)
+            shap.summary_plot(shap_values, X_test.drop(id_col_list,axis=1),show=False)
             # shap.summary_plot(shap_values, X_test,show=False)
             plt.savefig('summary_plot.png')
             mlflow.log_artifact('summary_plot.png')
@@ -367,11 +370,7 @@ class model_training(Task):
         #  print(X_test.shape)
         #  print(X_test.columns)
         #  print(y_test)
-        #  model_feature_lookups = [FeatureLookup(table_name=table_name, lookup_key=lookup_key)]
-                
-        # # fs.create_training_set looks up features in model_feature_lookups that match the primary key from inference_data_df
-        #  training_set = fs.create_training_set(inference_data_df, model_feature_lookups, label=self.conf['features']['target_col'])
-        #  df= training_set.load_df().toPandas()
+      
          X_test1=fs.read_table(self.conf['feature-store']['table_name'])
          
         #  spark = SparkSession.builder.appName("CSV Loading Example").getOrCreate()
