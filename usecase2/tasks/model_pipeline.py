@@ -43,6 +43,10 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix, classification_report
 
 from databricks.feature_store import feature_table, FeatureLookup
+import seaborn as sns
+from evidently import ColumnMapping
+
+from evidently.metric_preset import DataDriftPreset
 # from utils import apply_model
 
 warnings.filterwarnings('ignore')
@@ -73,7 +77,7 @@ class model_training(Task):
         model_feature_lookups = [FeatureLookup(table_name=table_name, lookup_key=lookup_key)]
                 
         # fs.create_training_set looks up features in model_feature_lookups that match the primary key from inference_data_df
-        training_set = fs.create_training_set(inference_data_df, model_feature_lookups, label=target,exclude_columns=lookup_key)
+        training_set = fs.create_training_set(inference_data_df, model_feature_lookups, label=target)#,exclude_columns=lookup_key)
         df= training_set.load_df().toPandas()
 
         # X_train, X_val, y_train, y_val,X_test,y_test=self.train_test_val_split(df_input,test_split,val_split)
@@ -220,6 +224,24 @@ class model_training(Task):
                 top_features_df.loc[row_idx, f'REASON{i+1}'] = top_feature_names[i]
         
         return top_features_df
+    
+    def eval_drift(self,reference, production, column_mapping):
+
+        column_mapping = ColumnMapping()
+
+        column_mapping.numerical_features =  self.conf['features']['numerical_features']
+        column_mapping.categorical_features = self.conf['features']['categorical_features']
+
+        data_drift_report = Report(metrics=[DataDriftPreset()])
+        data_drift_report.run(reference_data=reference, current_data=production, column_mapping=column_mapping)
+        report = data_drift_report.as_dict()
+
+        drifts = []
+
+        for feature in column_mapping.numerical_features + column_mapping.categorical_features:
+            drifts.append((feature, report["metrics"][1]["result"]["drift_by_columns"][feature]["drift_score"]))
+
+        return drifts
         
 
     
@@ -301,7 +323,7 @@ class model_training(Task):
             fs.log_model(
                                 model=model_xgb,
                                 artifact_path="usecase",
-                                flavor=mlflow.sklearn,
+                                flavor=mlflow.xgboost,
                                 training_set= training_set,
                                 registered_model_name="usecase_model",
                                 )
@@ -324,17 +346,20 @@ class model_training(Task):
             # Log the pickle file as an artifact in MLflow
             mlflow.log_artifact("model.pkl")
 
-             # Create a SHAP explanation
-            # explainer = shap.Explainer(model_xgb, X_val.drop(self.conf['features']['id_col_list'],axis=1))
-            explainer = shap.Explainer(model_xgb, X_val)
+            #  Create a SHAP explanation
+            explainer = shap.Explainer(model_xgb, X_val.drop(self.conf['features']['id_col_list'],axis=1))
+            # explainer = shap.Explainer(model_xgb, X_val)
             # shap_values = explainer(X_test.drop(self.conf['features']['id_col_list'],axis=1))
             shap_values = explainer(X_test)
             # Visualize the SHAP explanation
             # shap.plots.bar(shap_values[1],show=False)
-            # shap.summary_plot(shap_values, X_test.drop(self.conf['features']['id_col_list'],axis=1),show=False)
-            shap.summary_plot(shap_values, X_test,show=False)
+            shap.summary_plot(shap_values, X_test.drop(self.conf['features']['id_col_list'],axis=1),show=False)
+            # shap.summary_plot(shap_values, X_test,show=False)
             plt.savefig('summary_plot.png')
             mlflow.log_artifact('summary_plot.png')
+
+
+            
 
         return X_test
     #,y_test,X_val,df_input_spark.select(self.conf['features']['id_col_list'])
@@ -351,11 +376,15 @@ class model_training(Task):
         #  training_set = fs.create_training_set(inference_data_df, model_feature_lookups, label=self.conf['features']['target_col'])
         #  df= training_set.load_df().toPandas()
          X_test1=fs.read_table(self.conf['feature-store']['table_name'])
+         
         #  spark = SparkSession.builder.appName("CSV Loading Example").getOrCreate()
         #  spark_test = spark.createDataFrame(X_test)
         #  batch_df=X_test[self.conf['features']['id_col_list']]
          print(X_test1.columns)
          print(X_test1.count())
+         inference_list=X_test['NPI_ID'].tolist()
+
+         X_test1=X_test1.filter(X_test1['NPI_ID'].isin(inference_list))
          
          print('scoring now')
          test_pred = fs.score_batch("models:/usecase_model/latest", X_test1)
@@ -368,6 +397,9 @@ class model_training(Task):
 
          print('converted to pandas')
          print(ans_test.columns)
+        #  X_test1=X_test1.toPandas()
+        #  df_refernce=X_test1[:2500,:]
+        #  df_test=X_test1[2500:,:]
         #  y_pred=model_xgb.predict(X_test.drop(self.conf['features']['id_col_list'],axis=1))
         #  y_test = y_test.reset_index()
         #  appended_df = test_pred.union(y_test)

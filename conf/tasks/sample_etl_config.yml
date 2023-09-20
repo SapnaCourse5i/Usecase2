@@ -12,9 +12,26 @@ features:
   id_col_list : ['NPI_ID', 'HCP_ID']
   value_replace : 'Sex'
 
+  numerical_features : ['Age', 'Number_of_Rx', 'Rx_last_1_Month',
+       'Rx_last_3_Month', 'Rx_last_6_Month', 'Rx_last_12_Month',
+       'Claims_last_1_Month', 'Claims_last_3_Month',
+       'Procedures_chemo_last_1_month', 'Procedures_chemo_last_3_month',
+       'Procedures_chemo_last_6_month', 'Procedures_chemo_last_12_month',
+       'Procedures_radio_last_1_month', 'Procedures_Immuno_last_6_month',
+       'Procedures_Immuno_last_12_month', 'Procedures_Biopsy_last_3_month',
+       'Procedures_Biopsy_last_6_month', 'Procedures_Biopsy_last_12_month',
+       'Promotional_medscape_last_1_month',
+       'Promotional_medscape_last_3_month',
+       'Promotional_medscape_last_6_month', 'F2F_visit',
+       'F2F_visit_last_1_month', 'F2F_visit_last_3_month',
+       'VRC_visit_last_3_month', 'VRC_visit_last_6_month',
+       'VRC_visit_last_12_month']
+  categorical_features : ['HCO_Affiliation_Type_Contract',
+       'HCO_Affiliation_Type_Referral']
+
 feature-store:
              lookup_key: ["HCP_ID","NPI_ID"]
-             table_name: "usecase2_table_2"
+             table_name: "usecase2_table_3"
              final_features_table : "usecase2_features"
 
 cleaned_data:
@@ -36,11 +53,11 @@ Mlflow :
   experiment_name : "/Shared/dbx/usecase2_ml"
 
 params :
- colsample_bytree: 0.8011137517906433
- gamma': 0.0003315092691686855
+ colsample_bytree: 0.80
+ gamma': 0.0
  max_depth': 7
- reg_alpha: 0.20064996416845873
- subsample': 0.19265865309365698
+ reg_alpha: 0.2
+ subsample': 0.19
 
 
 
