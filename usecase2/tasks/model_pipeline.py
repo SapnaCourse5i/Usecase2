@@ -284,8 +284,8 @@ class model_training(Task):
         with mlflow.start_run() as run:
             # print(self.conf['params'])
             
-            # model_xgb = xgb.XGBClassifier(**self.conf['params'])
-            model_xgb=LogisticRegression()
+            model_xgb = xgb.XGBClassifier(**self.conf['params'])
+            # model_xgb=LogisticRegression()
 
             model_xgb.fit(X_train.drop(self.conf['features']['id_col_list'], axis=1, errors='ignore'), y_train)
             y_pred_train = model_xgb.predict(X_train.drop(self.conf['features']['id_col_list'], axis=1, errors='ignore'))
@@ -354,7 +354,7 @@ class model_training(Task):
         #  spark = SparkSession.builder.appName("CSV Loading Example").getOrCreate()
         #  spark_test = spark.createDataFrame(X_test)
         #  batch_df=X_test[self.conf['features']['id_col_list']]
-         print(len(X_test1.columns))
+         print(X_test1.columns)
          print(X_test1.count())
          
          print('scoring now')
@@ -367,6 +367,7 @@ class model_training(Task):
          ans_test = test_pred.toPandas()
 
          print('converted to pandas')
+         print(ans_test.columns)
         #  y_pred=model_xgb.predict(X_test.drop(self.conf['features']['id_col_list'],axis=1))
         #  y_test = y_test.reset_index()
         #  appended_df = test_pred.union(y_test)
