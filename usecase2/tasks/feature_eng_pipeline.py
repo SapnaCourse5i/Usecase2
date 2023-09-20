@@ -27,14 +27,14 @@ from pyspark.dbutils import DBUtils
 
 class FeatureEngineering_Pipeline(Task):
     def push_df_to_s3(self,df,access_key,secret_key):
-            
-           """
-           Push dataframe to s3 bucket
-           parameters: dataframe
-           access_key: aws access key
-           secret key: aws secret key
+                
+            """
+            Push dataframe to s3 bucket
+            parameters: dataframe
+            access_key: aws access key
+            secret key: aws secret key
 
-           """
+            """
 
             csv_buffer = BytesIO()
             df.to_csv(csv_buffer, index=False)
@@ -77,11 +77,7 @@ class FeatureEngineering_Pipeline(Task):
         
         
         access_key = aws_access_key 
-        secret_key = aws_secret_key
-
-        
-
-                
+        secret_key = aws_secret_key     
                 
                 # encoded_secret_key = urllib.parse.quote(secret_key,safe="")
         
