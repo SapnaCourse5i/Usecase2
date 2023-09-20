@@ -27,6 +27,15 @@ from pyspark.dbutils import DBUtils
 
 class FeatureEngineering_Pipeline(Task):
     def push_df_to_s3(self,df,access_key,secret_key):
+            
+           """
+           Push dataframe to s3 bucket
+           parameters: dataframe
+           access_key: aws access key
+           secret key: aws secret key
+
+           """
+
             csv_buffer = BytesIO()
             df.to_csv(csv_buffer, index=False)
             csv_content = csv_buffer.getvalue()
@@ -40,21 +49,25 @@ class FeatureEngineering_Pipeline(Task):
 
             return {"df_push_status": 'success'}
 
-    def push_final_feature_df_to_s3(self,df,access_key,secret_key):
-            csv_buffer = BytesIO()
-            df.to_csv(csv_buffer, index=False)
-            csv_content = csv_buffer.getvalue()
+    # def push_final_feature_df_to_s3(self,df,access_key,secret_key):
+    #         csv_buffer = BytesIO()
+    #         df.to_csv(csv_buffer, index=False)
+    #         csv_content = csv_buffer.getvalue()
 
-            s3 = boto3.resource("s3",aws_access_key_id=access_key, 
-                      aws_secret_access_key=secret_key, 
-                      region_name='ap-south-1')
+    #         s3 = boto3.resource("s3",aws_access_key_id=access_key, 
+    #                   aws_secret_access_key=secret_key, 
+    #                   region_name='ap-south-1')
 
-            s3_object_key = self.conf['cleaned_data']['final_features_df_path'] 
-            s3.Object(self.conf['s3']['bucket_name'], s3_object_key).put(Body=csv_content)
+    #         s3_object_key = self.conf['cleaned_data']['final_features_df_path'] 
+    #         s3.Object(self.conf['s3']['bucket_name'], s3_object_key).put(Body=csv_content)
 
-            return {"df_push_status": 'success'}
+    #         return {"df_push_status": 'success'}
     def preprocessing(self):
-        
+        """
+           fetch data from S3 bucket , clean the data 
+           return datafrme
+           
+           """
         spark = SparkSession.builder.appName("CSV Loading Example").getOrCreate()
 
         dbutils = DBUtils(spark)
@@ -124,6 +137,13 @@ class FeatureEngineering_Pipeline(Task):
         
     
     def feature_selection(self):
+          
+          """
+          Perform feature selection using SelectKBest
+          return : list of top n features
+           
+           
+          """   
        
           selector = SelectKBest(k=self.conf['kbestfeatures']['no_of_features'])
           df_input=self.preprocessing()
@@ -139,14 +159,15 @@ class FeatureEngineering_Pipeline(Task):
           cols_for_model_df_list = id_col_list + top_n_col_list
           df_final=df_input[cols_for_model_df_list]
           df_final[id_col_list]=df_input[id_col_list]
-          spark = SparkSession.builder.appName("CSV Loading Example").getOrCreate()
+          return top_n_col_list
+        #   spark = SparkSession.builder.appName("CSV Loading Example").getOrCreate()
 
-          dbutils = DBUtils(spark)
+        #   dbutils = DBUtils(spark)
 
-          aws_access_key = dbutils.secrets.get(scope="secrets-scope2", key="aws-access-key")
-          aws_secret_key = dbutils.secrets.get(scope="secrets-scope2", key="aws-secret-key")
-          access_key = aws_access_key 
-          secret_key = aws_secret_key
+        #   aws_access_key = dbutils.secrets.get(scope="secrets-scope2", key="aws-access-key")
+        #   aws_secret_key = dbutils.secrets.get(scope="secrets-scope2", key="aws-secret-key")
+        #   access_key = aws_access_key 
+        #   secret_key = aws_secret_key
         #   table_name = self.conf['feature-store']['final_features_table']
         #   print(table_name)
 
@@ -163,8 +184,8 @@ class FeatureEngineering_Pipeline(Task):
         #         schema=df_spark.schema,
         #         description="health features"
             # )
-          push_status = self.push_final_feature_df_to_s3(df_final,access_key,secret_key)
-          print(push_status)
+        #   push_status = self.push_final_feature_df_to_s3(df_final,access_key,secret_key)
+        #   print(push_status)
         #   top_n_col_list = select_kbest_features(df_input.drop(id_col_list,axis=1),target_col, 30)
           
        

@@ -11,7 +11,7 @@ import pickle
 import shap
 import io
 from pyspark.sql import udf
-from pyspark.sql.types import ArrayType, StructField, StructType, StringType , IntegerType
+# from pyspark.sql.types import ArrayType, StructField, StructType, StringType , IntegerType
 
 import boto3
 # Importing necessary libraries for encoding
@@ -30,10 +30,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, roc_curve, auc,classification_report
 import xgboost as xgb
-import lightgbm as lgb
 
-# Hyperparameter Tuning
-from hyperopt import fmin, tpe, hp, SparkTrials, STATUS_OK, Trials
 
 from databricks import feature_store
 from pyspark.sql import SparkSession
@@ -44,9 +41,9 @@ from sklearn.metrics import confusion_matrix, classification_report
 
 from databricks.feature_store import feature_table, FeatureLookup
 import seaborn as sns
-from evidently import ColumnMapping
+# from evidently import ColumnMapping
 
-from evidently.metric_preset import DataDriftPreset
+# from evidently.metric_preset import DataDriftPreset
 # from utils import apply_model
 
 warnings.filterwarnings('ignore')
@@ -225,23 +222,23 @@ class model_training(Task):
         
         return top_features_df
     
-    def eval_drift(self,reference, production, column_mapping):
+    # def eval_drift(self,reference, production, column_mapping):
 
-        column_mapping = ColumnMapping()
+    #     column_mapping = ColumnMapping()
 
-        column_mapping.numerical_features =  self.conf['features']['numerical_features']
-        column_mapping.categorical_features = self.conf['features']['categorical_features']
+    #     column_mapping.numerical_features =  self.conf['features']['numerical_features']
+    #     column_mapping.categorical_features = self.conf['features']['categorical_features']
 
-        data_drift_report = Report(metrics=[DataDriftPreset()])
-        data_drift_report.run(reference_data=reference, current_data=production, column_mapping=column_mapping)
-        report = data_drift_report.as_dict()
+    #     data_drift_report = Report(metrics=[DataDriftPreset()])
+    #     data_drift_report.run(reference_data=reference, current_data=production, column_mapping=column_mapping)
+    #     report = data_drift_report.as_dict()
 
-        drifts = []
+    #     drifts = []
 
-        for feature in column_mapping.numerical_features + column_mapping.categorical_features:
-            drifts.append((feature, report["metrics"][1]["result"]["drift_by_columns"][feature]["drift_score"]))
+    #     for feature in column_mapping.numerical_features + column_mapping.categorical_features:
+    #         drifts.append((feature, report["metrics"][1]["result"]["drift_by_columns"][feature]["drift_score"]))
 
-        return drifts
+    #     return drifts
         
 
     
@@ -325,7 +322,7 @@ class model_training(Task):
                                 artifact_path="usecase",
                                 flavor=mlflow.xgboost,
                                 training_set= training_set,
-                                registered_model_name="usecase_model",
+                                registered_model_name="usecase2_model",
                                 )
             
             
