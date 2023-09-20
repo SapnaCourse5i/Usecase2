@@ -85,9 +85,11 @@ class FeatureEngineering_Pipeline(Task):
 
         df_input = pd.read_csv(BytesIO(csv_content))
         df_input = df_input.reset_index()
+        df_input=df_input.drop('index',axis=1)
+
  
         #Clean column names
-       
+        print(df_input.columns)
         df_input.columns = df_input.columns.str.strip()
         df_input.columns = df_input.columns.str.replace(' ', '_')
         df_input[self.conf['features']['value_replace']].replace({' M ': 'M', ' F ': 'F'},inplace=True)
