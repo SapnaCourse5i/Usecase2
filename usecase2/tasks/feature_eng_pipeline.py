@@ -101,6 +101,8 @@ class FeatureEngineering_Pipeline(Task):
         print(table_name)
 
         df_feature = df_input.drop(self.conf['features']['target_col'],axis=1)
+        print(df_input.shape)
+        print(df_input.info())
 
         df_spark = spark.createDataFrame(df_feature)
 
