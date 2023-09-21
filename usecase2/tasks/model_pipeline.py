@@ -42,7 +42,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix, classification_report
 
 from databricks.feature_store import feature_table, FeatureLookup
-from utils import select_kbest_features
+from utils.py import select_kbest_features
 
 # from evidently import ColumnMapping
 
@@ -93,7 +93,7 @@ class model_training(Task):
 
         # Performing the train-val split using train data
         X_train, X_val, y_train, y_val = train_test_split(X_train_pre, y_train_pre, test_size=val_split, random_state=42, stratify= y_train_pre)
-        return df,X_train, X_val, y_train, y_val,X_test,y_test,training_set
+        return df,X_train, X_val, y_train, y_val,X_test,y_test,training_set,top_features
     
     def metrics(self,y_train,y_pred_train,y_val,y_pred_val,y_test,y_pred):
         """
@@ -274,7 +274,7 @@ class model_training(Task):
         target=self.conf['features']['target_col']
     
 
-        df,X_train, X_val, y_train, y_val,X_test,y_test,training_set=self.train_test_val_split(target,self.conf['split']['test_split'],self.conf['split']['val_split'],self.conf['feature-store']['table_name'],self.conf['feature-store']['lookup_key'],inference_data_df)
+        df,X_train, X_val, y_train, y_val,X_test,y_test,training_set,top_features=self.train_test_val_split(target,self.conf['split']['test_split'],self.conf['split']['val_split'],self.conf['feature-store']['table_name'],self.conf['feature-store']['lookup_key'],inference_data_df)
         # df_train_spark = spark.createDataFrame(X_train.drop(self.conf['features']['id_col_list'],axis=1))
 
         # csv_buffer = BytesIO()
@@ -348,12 +348,12 @@ class model_training(Task):
 
             
 
-        return X_test
+        return X_test,top_features
     #,y_test,X_val,df_input_spark.select(self.conf['features']['id_col_list'])
     
 
     def inference(self):
-         X_test=self.train_model()
+         X_test,top_features=self.train_model()
         #  print(X_test.shape)
         #  print(X_test.columns)
         #  print(y_test)
@@ -366,6 +366,7 @@ class model_training(Task):
          print(X_test1.columns)
          print(X_test1.count())
          inference_list=X_test['NPI_ID'].tolist()
+         X_test1=X_test1.select(top_features)
 
          X_test1=X_test1.filter(X_test1['NPI_ID'].isin(inference_list))
          
