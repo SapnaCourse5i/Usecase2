@@ -40,9 +40,9 @@ jobs:
           pip install evidently
         
         
-      # - name: Remove Databricks Secret
-      #   run: |
-      #       databricks secrets delete-scope --scope secrets-scope2
+      - name: Remove Databricks Secret
+        run: |
+            databricks secrets delete-scope --scope secrets-scope2
 
       
       - name: Create Databricks Secrets Scope
