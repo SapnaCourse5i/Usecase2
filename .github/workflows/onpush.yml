@@ -37,6 +37,7 @@ jobs:
       - name: Install dependencies and project in dev mode
         run: |
           pip install -e ".[local,test]"
+          pip install evidently
         
         
       # - name: Remove Databricks Secret
