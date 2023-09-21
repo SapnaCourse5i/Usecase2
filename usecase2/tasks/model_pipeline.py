@@ -42,6 +42,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix, classification_report
 
 from databricks.feature_store import feature_table, FeatureLookup
+from utils import select_kbest_features
 
 # from evidently import ColumnMapping
 
@@ -78,7 +79,9 @@ class model_training(Task):
         # fs.create_training_set looks up features in model_feature_lookups that match the primary key from inference_data_df
         training_set = fs.create_training_set(inference_data_df, model_feature_lookups, label=target)#,exclude_columns=lookup_key)
         df= training_set.load_df().toPandas()
-
+        df1=df.drop(self.conf['features']['id_col_list'],axis=1)
+        top_features=select_kbest_features(df,self.conf['features']['target_col'],n=self.conf['kbestfeatures']['no_of_features'])
+        df=df[top_features]
         # X_train, X_val, y_train, y_val,X_test,y_test=self.train_test_val_split(df_input,test_split,val_split)
         
 

@@ -41,30 +41,31 @@ from databricks.feature_store import feature_table, FeatureLookup
 warnings.filterwarnings('ignore')
 from pyspark.dbutils import DBUtils
 
-from evidently.pipeline.column_mapping import ColumnMapping
-from evidently.report import Report
-from evidently.metric_preset import DataDriftPreset
+# from evidently.pipeline.column_mapping import ColumnMapping
+# from evidently.report import Report
+# from evidently.metric_preset import DataDriftPreset
 
 
 
 class data_drift(Task):
     def eval_drift(self,reference, production):
+        pass
 
-        column_mapping = ColumnMapping()
+    #     column_mapping = ColumnMapping()
 
-        column_mapping.numerical_features =  self.conf['features']['numerical_features']
-        column_mapping.categorical_features = self.conf['features']['categorical_features']
+    #     column_mapping.numerical_features =  self.conf['features']['numerical_features']
+    #     column_mapping.categorical_features = self.conf['features']['categorical_features']
 
-        data_drift_report = Report(metrics=[DataDriftPreset()])
-        data_drift_report.run(reference_data=reference, current_data=production, column_mapping=column_mapping)
-        report = data_drift_report.as_dict()
+    #     data_drift_report = Report(metrics=[DataDriftPreset()])
+    #     data_drift_report.run(reference_data=reference, current_data=production, column_mapping=column_mapping)
+    #     report = data_drift_report.as_dict()
 
-        drifts = []
+    #     drifts = []
 
-        for feature in column_mapping.numerical_features + column_mapping.categorical_features:
-            drifts.append((feature, report["metrics"][1]["result"]["drift_by_columns"][feature]["drift_score"]))
+    #     for feature in column_mapping.numerical_features + column_mapping.categorical_features:
+    #         drifts.append((feature, report["metrics"][1]["result"]["drift_by_columns"][feature]["drift_score"]))
 
-        return drifts
+    #     return drifts
     def launch(self):
         self.logger.info("Launching Model Training task")
         self.eval_drift()
