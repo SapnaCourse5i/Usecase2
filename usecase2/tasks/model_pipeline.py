@@ -42,7 +42,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix, classification_report
 
 from databricks.feature_store import feature_table, FeatureLookup
-from utils.py import select_kbest_features
+import utils
+from utils import select_kbest_features
 
 # from evidently import ColumnMapping
 
