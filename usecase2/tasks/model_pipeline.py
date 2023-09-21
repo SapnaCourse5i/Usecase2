@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import warnings
-warnings.filterwarnings("ignore")
+
 from usecase2.common import Task
 #Visual Libraries
 import matplotlib.pyplot as plt
@@ -42,7 +42,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix, classification_report
 
 from databricks.feature_store import feature_table, FeatureLookup
-import seaborn as sns
+
 # from evidently import ColumnMapping
 
 # from evidently.metric_preset import DataDriftPreset
@@ -224,23 +224,7 @@ class model_training(Task):
         
         return top_features_df
     
-    def eval_drift(self,reference, production):
-
-        column_mapping = ColumnMapping()
-
-        column_mapping.numerical_features =  self.conf['features']['numerical_features']
-        column_mapping.categorical_features = self.conf['features']['categorical_features']
-
-        data_drift_report = Report(metrics=[DataDriftPreset()])
-        data_drift_report.run(reference_data=reference, current_data=production, column_mapping=column_mapping)
-        report = data_drift_report.as_dict()
-
-        drifts = []
-
-        for feature in column_mapping.numerical_features + column_mapping.categorical_features:
-            drifts.append((feature, report["metrics"][1]["result"]["drift_by_columns"][feature]["drift_score"]))
-
-        return drifts
+    
         
 
     

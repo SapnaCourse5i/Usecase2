@@ -47,6 +47,7 @@ setup(
         "console_scripts": [
             "etl = usecase2.tasks.feature_eng_pipeline:entrypoint",
             "ml = usecase2.tasks.model_pipeline:entrypoint",
+            "drift = usecase2.tasks.data_drift:entrypoint"
     ]},
     version=__version__,
     description="",

@@ -41,10 +41,46 @@ from databricks.feature_store import feature_table, FeatureLookup
 warnings.filterwarnings('ignore')
 from pyspark.dbutils import DBUtils
 
+from evidently.pipeline.column_mapping import ColumnMapping
+from evidently.report import Report
+from evidently.metric_preset import DataDriftPreset
 
 
-class inference(Task):
-    pass
+
+class data_drift(Task):
+    def eval_drift(self,reference, production):
+
+        column_mapping = ColumnMapping()
+
+        column_mapping.numerical_features =  self.conf['features']['numerical_features']
+        column_mapping.categorical_features = self.conf['features']['categorical_features']
+
+        data_drift_report = Report(metrics=[DataDriftPreset()])
+        data_drift_report.run(reference_data=reference, current_data=production, column_mapping=column_mapping)
+        report = data_drift_report.as_dict()
+
+        drifts = []
+
+        for feature in column_mapping.numerical_features + column_mapping.categorical_features:
+            drifts.append((feature, report["metrics"][1]["result"]["drift_by_columns"][feature]["drift_score"]))
+
+        return drifts
+    def launch(self):
+        self.logger.info("Launching Model Training task")
+        self.eval_drift()
+        self.logger.info("Model Training finished!")
+
+
+
+# if you're using python_wheel_task, you'll need the entrypoint function to be used in setup.py
+def entrypoint():  # pragma: no cover
+    task = data_drift()
+
+    task.launch()
+
+# if you're using spark_python_task, you'll need the __main__ block to start the code execution
+if __name__ == '__main__':
+    entrypoint()
 
     # def inference_data():
 
