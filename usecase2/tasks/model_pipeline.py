@@ -81,8 +81,8 @@ class model_training(Task):
         training_set = fs.create_training_set(inference_data_df, model_feature_lookups, label=target)#,exclude_columns=lookup_key)
         df= training_set.load_df().toPandas()
         df1=df.drop(self.conf['features']['id_col_list'],axis=1)
-        top_features=select_kbest_features(df1,self.conf['features']['target_col'],n=self.conf['kbestfeatures']['no_of_features'])
-        df=df[top_features]
+        top_features=select_kbest_features(df1,df1[self.conf['features']['target_col']],n=self.conf['kbestfeatures']['no_of_features'])
+        df=df[top_features+ self.conf['features']['id_col_target_list']]
         # X_train, X_val, y_train, y_val,X_test,y_test=self.train_test_val_split(df_input,test_split,val_split)
         
 
@@ -367,7 +367,7 @@ class model_training(Task):
          print(X_test1.columns)
          print(X_test1.count())
          inference_list=X_test['NPI_ID'].tolist()
-         X_test1=X_test1.select(top_features)
+         X_test1=X_test1.select(top_features+ self.conf['features']['id_col_list'])
 
          X_test1=X_test1.filter(X_test1['NPI_ID'].isin(inference_list))
          
