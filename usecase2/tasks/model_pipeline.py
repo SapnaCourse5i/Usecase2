@@ -304,7 +304,8 @@ class model_training(Task):
             y_val_probs = model_xgb.predict_proba(X_val.drop(id_col_list, axis=1, errors='ignore'))
             y_pred_probs = model_xgb.predict_proba(X_test.drop(id_col_list, axis=1, errors='ignore'))
             y_train_probs = model_xgb.predict_proba(X_train.drop(id_col_list, axis=1, errors='ignore'))
-            
+            print(y_pred_test)
+            print(y_test)
             fpr, tpr, threshold = roc_curve(y_test,y_pred_test)
             roc_auc = auc(fpr, tpr)
             cm=self.confusion_metrics(y_test,y_pred_test)
