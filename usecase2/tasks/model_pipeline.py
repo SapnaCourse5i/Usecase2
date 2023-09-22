@@ -371,7 +371,7 @@ class model_training(Task):
          print(X_test1.count())
         #  inference_list=X_test['NPI_ID'].tolist()
          
-         X_test1=X_test1.select(top_features )
+        #  X_test1=X_test1.select(top_features )
 
         #  X_test1=X_test1.filter(X_test1['NPI_ID'].isin(spark_test))
         #  print(len(X_test1.columns))
