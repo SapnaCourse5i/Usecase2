@@ -372,11 +372,11 @@ class model_training(Task):
         #  inference_list=X_test['NPI_ID'].tolist()
         #  X_test1=X_test1.select(top_features )
 
-         X_test1=X_test1.filter(X_test1['NPI_ID'].isin(spark_test))
-         print(len(X_test1.columns))
+        #  X_test1=X_test1.filter(X_test1['NPI_ID'].isin(spark_test))
+        #  print(len(X_test1.columns))
          
          print('scoring now')
-         test_pred = fs.score_batch("models:/usecase2_model/latest", X_test1)
+         test_pred = fs.score_batch("models:/usecase2_model/latest", spark_test)
          print('scoring done')
          print(len(test_pred.columns))
          print(test_pred.count())
