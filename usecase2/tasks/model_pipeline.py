@@ -78,12 +78,12 @@ class model_training(Task):
         model_feature_lookups = [FeatureLookup(table_name=table_name, lookup_key=lookup_key)]
                 
         # fs.create_training_set looks up features in model_feature_lookups that match the primary key from inference_data_df
-        training_set = fs.create_training_set(inference_data_df, model_feature_lookups, label=target)#,exclude_columns=lookup_key)
+        training_set = fs.create_training_set(inference_data_df, model_feature_lookups, label=target,exclude_columns=lookup_key)
         df= training_set.load_df().toPandas()
-        df1=df.drop(self.conf['features']['id_target_col_list'],axis=1)
+        df1=df.drop(self.conf['features']['target_col'],axis=1)
         print(df1.columns)
         top_features=select_kbest_features(df1,df[self.conf['features']['target_col']],n=self.conf['kbestfeatures']['no_of_features'])
-        df=df[top_features+ self.conf['features']['id_target_col_list']]
+        df=df[top_features]
         print(df.columns)
         # X_train, X_val, y_train, y_val,X_test,y_test=self.train_test_val_split(df_input,test_split,val_split)
         
@@ -376,7 +376,7 @@ class model_training(Task):
         #  print(len(X_test1.columns))
          
          print('scoring now')
-         test_pred = fs.score_batch("models:/usecase2_model/latest", spark_test)
+         test_pred = fs.score_batch("models:/usecase2_model/latest", X_test1)
          print('scoring done')
          print(len(test_pred.columns))
          print(test_pred.count())
