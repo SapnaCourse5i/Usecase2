@@ -82,7 +82,7 @@ class model_training(Task):
         df= training_set.load_df().toPandas()
         df1=df.drop(self.conf['features']['id_col_list'],axis=1)
         top_features=select_kbest_features(df1,df1[self.conf['features']['target_col']],n=self.conf['kbestfeatures']['no_of_features'])
-        df=df[top_features+ self.conf['features']['id_col_target_list']]
+        df=df[top_features+ self.conf['features']['id_target_col_list']]
         # X_train, X_val, y_train, y_val,X_test,y_test=self.train_test_val_split(df_input,test_split,val_split)
         
 
