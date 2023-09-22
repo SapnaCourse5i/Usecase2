@@ -364,15 +364,15 @@ class model_training(Task):
       
          X_test1=fs.read_table(self.conf['feature-store']['table_name'])
          
-        #  spark = SparkSession.builder.appName("CSV Loading Example").getOrCreate()
-        #  spark_test = spark.createDataFrame(X_test)
+         spark = SparkSession.builder.appName("CSV Loading Example").getOrCreate()
+         spark_test = spark.createDataFrame(X_test)
         #  batch_df=X_test[self.conf['features']['id_col_list']]
          print(X_test1.columns)
          print(X_test1.count())
-         inference_list=X_test['NPI_ID'].tolist()
-         X_test1=X_test1.select(top_features)
+        #  inference_list=X_test['NPI_ID'].tolist()
+        #  X_test1=X_test1.select(top_features )
 
-         X_test1=X_test1.filter(X_test1['NPI_ID'].isin(inference_list))
+         X_test1=X_test1.filter(X_test1['NPI_ID'].isin(spark_test))
          print(len(X_test1.columns))
          
          print('scoring now')
