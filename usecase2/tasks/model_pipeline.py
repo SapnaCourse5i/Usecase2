@@ -375,7 +375,7 @@ class model_training(Task):
          X_test1=X_test1.filter(X_test1['NPI_ID'].isin(inference_list))
          
          print('scoring now')
-         test_pred = fs.score_batch("models:/usecase_model/latest", X_test1)
+         test_pred = fs.score_batch("models:/usecase2_model/latest", X_test1)
          print('scoring done')
          print(len(test_pred.columns))
          print(test_pred.count())
