@@ -295,8 +295,8 @@ class model_training(Task):
         with mlflow.start_run() as run:
             # print(self.conf['params'])
             
-            model_xgb = xgb.XGBClassifier(**self.conf['params'])
-            # model_xgb=LogisticRegression()
+            # model_xgb = xgb.XGBClassifier(**self.conf['params'])
+            model_xgb=LogisticRegression()
             id_col_list=self.conf['features']['id_col_list']
 
             model_xgb.fit(X_train.drop(id_col_list, axis=1, errors='ignore'), y_train)
