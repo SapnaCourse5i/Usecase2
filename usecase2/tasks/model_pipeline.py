@@ -80,10 +80,10 @@ class model_training(Task):
         # fs.create_training_set looks up features in model_feature_lookups that match the primary key from inference_data_df
         training_set = fs.create_training_set(inference_data_df, model_feature_lookups, label=target,exclude_columns=lookup_key)
         df= training_set.load_df().toPandas()
-        df1=df.drop(self.conf['features']['target_col'],axis=1)
-        print(df1.columns)
-        top_features=select_kbest_features(df1,df[self.conf['features']['target_col']],n=self.conf['kbestfeatures']['no_of_features'])
-        df=df[top_features+ [self.conf['features']['target_col']]]
+        # df1=df.drop(self.conf['features']['target_col'],axis=1)
+        # print(df1.columns)
+        # top_features=select_kbest_features(df1,df[self.conf['features']['target_col']],n=self.conf['kbestfeatures']['no_of_features'])
+        # df=df[top_features+ [self.conf['features']['target_col']]]
         print(df.columns)
         # X_train, X_val, y_train, y_val,X_test,y_test=self.train_test_val_split(df_input,test_split,val_split)
         
@@ -96,7 +96,7 @@ class model_training(Task):
 
         # Performing the train-val split using train data
         X_train, X_val, y_train, y_val = train_test_split(X_train_pre, y_train_pre, test_size=val_split, random_state=42, stratify= y_train_pre)
-        return df,X_train, X_val, y_train, y_val,X_test,y_test,training_set,top_features
+        return df,X_train, X_val, y_train, y_val,X_test,y_test,training_set#,top_features
     
     def metrics(self,y_train,y_pred_train,y_val,y_pred_val,y_test,y_pred):
         """
@@ -277,7 +277,7 @@ class model_training(Task):
         target=self.conf['features']['target_col']
     
 
-        df,X_train, X_val, y_train, y_val,X_test,y_test,training_set,top_features=self.train_test_val_split(target,self.conf['split']['test_split'],self.conf['split']['val_split'],self.conf['feature-store']['table_name'],self.conf['feature-store']['lookup_key'],inference_data_df)
+        df,X_train, X_val, y_train, y_val,X_test,y_test,training_set=self.train_test_val_split(target,self.conf['split']['test_split'],self.conf['split']['val_split'],self.conf['feature-store']['table_name'],self.conf['feature-store']['lookup_key'],inference_data_df)
         # df_train_spark = spark.createDataFrame(X_train.drop(self.conf['features']['id_col_list'],axis=1))
 
         # csv_buffer = BytesIO()
@@ -352,33 +352,34 @@ class model_training(Task):
 
             
 
-        return X_test,top_features
+        return X_test
     #,y_test,X_val,df_input_spark.select(self.conf['features']['id_col_list'])
     
 
     def inference(self):
          X_test,top_features=self.train_model()
-         print(X_test.shape)
-         print(X_test.columns)
+        #  print(X_test.shape)
+        #  print(X_test.columns)
         #  print(y_test)
       
          X_test1=fs.read_table(self.conf['feature-store']['table_name'])
          
-         spark = SparkSession.builder.appName("CSV Loading Example").getOrCreate()
-         spark_test = spark.createDataFrame(X_test)
-        #  batch_df=X_test[self.conf['features']['id_col_list']]
-         print(X_test1.columns)
-         print(X_test1.count())
-        #  inference_list=X_test['NPI_ID'].tolist()
-         all_features =top_features+ self.conf['features']['id_col_list']
-         print(all_features)
-         X_test2=X_test1.select(all_features)
+        #  spark = SparkSession.builder.appName("CSV Loading Example").getOrCreate()
+        #  spark_test = spark.createDataFrame(X_test)
+        # #  batch_df=X_test[self.conf['features']['id_col_list']]
+        #  print(len(X_test1.columns))
+        #  print(X_test1.count())
+        # #  inference_list=X_test['NPI_ID'].tolist()
+        #  all_features =top_features+ self.conf['features']['id_col_list']
+        #  print(all_features)
+        #  X_test2=X_test1.select(all_features)
+        #  print(len(X_test2.columns))
 
         #  X_test1=X_test1.filter(X_test1['NPI_ID'].isin(spark_test))
         #  print(len(X_test1.columns))
          
          print('scoring now')
-         test_pred = fs.score_batch("models:/usecase2_model/latest", X_test2)
+         test_pred = fs.score_batch("models:/usecase2_model/latest", X_test1)
          print('scoring done')
          print(len(test_pred.columns))
          print(test_pred.count())
