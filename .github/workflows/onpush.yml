@@ -37,7 +37,7 @@ jobs:
       - name: Install dependencies and project in dev mode
         run: |
           pip install -e ".[local,test]"
-          pip install evidently
+          pip install xgboost==1.7.6
         
         
       # - name: Remove Databricks Secret
