@@ -371,6 +371,7 @@ class model_training(Task):
          print(X_test1.count())
         #  inference_list=X_test['NPI_ID'].tolist()
          all_features =top_features+ self.conf['features']['id_col_list']
+         print(all_features)
          X_test2=X_test1.select(all_features)
 
         #  X_test1=X_test1.filter(X_test1['NPI_ID'].isin(spark_test))
