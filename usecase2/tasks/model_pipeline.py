@@ -357,7 +357,7 @@ class model_training(Task):
     
 
     def inference(self):
-         X_test,top_features=self.train_model()
+         X_test=self.train_model()
         #  print(X_test.shape)
         #  print(X_test.columns)
         #  print(y_test)
