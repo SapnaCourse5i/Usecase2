@@ -25,7 +25,7 @@ LOCAL_REQUIREMENTS = [
     "evidently",
     "pandas==1.5.3",
     "urllib3"
-    # "xgboost==1.6.2"
+    "xgboost==1.7.6"
     
 ]
 
