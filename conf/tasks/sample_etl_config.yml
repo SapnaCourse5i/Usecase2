@@ -33,6 +33,7 @@ feature-store:
              lookup_key: ["HCP_ID","NPI_ID"]
              table_name: "usecase2_table"
              final_features_table : "usecase2_features"
+             online_table_name : "usecase2_online_table"
 
 cleaned_data:
            preprocessed_df_path: 'preprocessed/preprocessed_df.csv'
