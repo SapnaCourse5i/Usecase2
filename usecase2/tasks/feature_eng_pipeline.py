@@ -13,6 +13,7 @@ import uuid
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import f_classif
 from databricks import feature_store
+from databricks.feature_store.online_store_spec import AmazonDynamoDBSpec
 
 from sklearn.model_selection import train_test_split
 
@@ -129,6 +130,15 @@ class FeatureEngineering_Pipeline(Task):
         
         push_status = self.push_df_to_s3(df_input,access_key,secret_key)
         print(push_status)
+        
+        online_store_spec = AmazonDynamoDBSpec(
+                        region="us-west-2",
+                        write_secret_prefix="feature-store-example-write/dynamo",
+                        read_secret_prefix="feature-store-example-read/dynamo",
+                        table_name = self.conf['feature-store']['online_table_name']
+                        )
+                
+        fs.publish_table(table_name, online_store_spec)
         return df_input
         
     
