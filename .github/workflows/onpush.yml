@@ -62,11 +62,11 @@ jobs:
             databricks secrets put --scope secrets-scope2 --key databricks-token --string-value "${{ secrets.DATABRICKS_TOKEN }}"
            
 
-            databricks secrets put --scope feature-store-example-read --key dynamo-access-key-id --string-value "${{ secrets.AWS_ACCESS_KEY_ID }}"
-            databricks secrets put --scope feature-store-example-read --key dynamo-secret-access-key --string-value "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+            # databricks secrets put --scope feature-store-example-read --key dynamo-access-key-id --string-value "${{ secrets.AWS_ACCESS_KEY_ID }}"
+            # databricks secrets put --scope feature-store-example-read --key dynamo-secret-access-key --string-value "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
 
-            databricks secrets put --scope feature-store-example-write --key dynamo-access-key-id --string-value "${{ secrets.AWS_ACCESS_KEY_ID }}"
-            databricks secrets put --scope feature-store-example-write --key dynamo-secret-access-key --string-value "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+            # databricks secrets put --scope feature-store-example-write --key dynamo-access-key-id --string-value "${{ secrets.AWS_ACCESS_KEY_ID }}"
+            # databricks secrets put --scope feature-store-example-write --key dynamo-secret-access-key --string-value "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
 
       
 
