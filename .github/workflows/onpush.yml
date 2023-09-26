@@ -52,7 +52,7 @@ jobs:
       - name: Create Databricks Secrets Scope
         run: |
             databricks secrets create-scope --scope feature-store-example-read1
-            databricks secrets delete-scope --scope feature-store-example-write1
+            databricks secrets create-scope --scope feature-store-example-write1
 
       - name: Set Databricks Secrets
         run: |
