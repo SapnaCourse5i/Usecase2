@@ -45,9 +45,9 @@ jobs:
       #       databricks secrets delete-scope --scope secrets-scope2
 
       
-      # - name: Create Databricks Secrets Scope
-      #   run: |
-      #       databricks secrets create-scope --scope secrets-scope2
+      - name: Create Databricks Secrets Scope
+        run: |
+            databricks secrets create-scope --scope secrets-scope2
       
       # - name: Create Databricks Secrets Scope
       #   run: |
