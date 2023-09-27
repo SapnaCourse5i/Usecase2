@@ -45,15 +45,15 @@ jobs:
       #       databricks secrets delete-scope --scope secrets-scope2
 
       
-      # - name: Create Databricks Secrets Scope
-      #   run: |
-      #       databricks secrets create-scope --scope secrets-scope2
-      # databricks secrets create-scope --scope feature-store-example-read1
+      - name: Create Databricks Secrets Scope
+        run: |
+            databricks secrets create-scope --scope secrets-scope2
       
-      # - name: Create Databricks Secrets Scope
-      #   run: |
-            
-      #       databricks secrets create-scope --scope feature-store-example-write1
+      
+      - name: Create Databricks Secrets Scope
+        run: |
+            databricks secrets create-scope --scope feature-store-example-read1
+            databricks secrets create-scope --scope feature-store-example-write1
 
       - name: Set Databricks Secrets
         run: |
@@ -78,13 +78,13 @@ jobs:
       # - name: Run the Data-preprocessing workflow in a jobless fashion
       #   run: |
       #       dbx launch UseCase2-preprocessing-data --from-assets --trace
-      - name: Workflow Model Training deployment (assets only upload)
-        run: |
-            dbx deploy UseCase2-training-data --assets-only 
+      # - name: Workflow Model Training deployment (assets only upload)
+      #   run: |
+      #       dbx deploy UseCase2-training-data --assets-only 
 
-      - name: Run the Model Training workflow in a jobless fashion
-        run: |
-            dbx launch UseCase2-training-data --from-assets --trace
+      # - name: Run the Model Training workflow in a jobless fashion
+      #   run: |
+      #       dbx launch UseCase2-training-data --from-assets --trace
       
 
       
