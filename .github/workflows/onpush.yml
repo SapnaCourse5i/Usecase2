@@ -84,9 +84,9 @@ jobs:
       - name: Run the Model Training workflow in a jobless fashion
         run: |
             dbx launch UseCase2-training-data --from-assets --trace
-      - name: Workflow Model Training deployment (assets only upload)
+      - name: Workflow  deployment (assets only upload)
         run: |
-            dbx deploy deployement --assets-only 
+            dbx deploy deployment --assets-only 
 
       - name: Run the Model Training workflow in a jobless fashion
         run: |
