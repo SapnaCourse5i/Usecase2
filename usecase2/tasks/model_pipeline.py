@@ -314,7 +314,7 @@ class model_training(Task):
             fs.log_model(
                                 model=model_xgb,
                                 artifact_path="usecase",
-                                flavor=mlflow.xgboost,
+                                flavor=mlflow.sklearn,
                                 training_set= training_set,
                                 registered_model_name="usecase2_model",
                                 )
