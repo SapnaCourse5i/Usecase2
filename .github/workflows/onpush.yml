@@ -49,12 +49,12 @@ jobs:
       #       databricks secrets create-scope --scope secrets-scope2
       
       
-      - name: Create Databricks Secrets Scope
-        run: |
-            databricks secrets create-scope --scope feature-store-example-read1
-            databricks secrets create-scope --scope feature-store-example-write1
+      # - name: Create Databricks Secrets Scope
+      #   run: |
+      #       databricks secrets create-scope --scope feature-store-example-read1
+      #       databricks secrets create-scope --scope feature-store-example-write1
 
-      - name: Set Databricks Secrets
+      # - name: Set Databricks Secrets
         run: |
             databricks secrets put --scope secrets-scope2 --key aws-access-key --string-value "${{ secrets.AWS_ACCESS_KEY_ID }}"
             databricks secrets put --scope secrets-scope2 --key aws-secret-key --string-value "${{ secrets.AWS_SECRET_ACCESS_KEY }}"

@@ -60,6 +60,11 @@ params :
  reg_alpha: 0.2
  subsample': 0.19
 
+deployment-pipeline :
+    job_id: '211378785812175'
+
+databricks-url : "https://dbc-e78722a2-75b4.cloud.databricks.com"
+
 
 
 
