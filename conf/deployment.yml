@@ -43,6 +43,14 @@ environments:
               package_name: "usecase2"
               entry_point: "ml"
               parameters: [ "--conf-file", "file:fuse://conf/tasks/sample_etl_config.yml" ]
+      - name: "deployment"
+        tasks:
+          - task_key: "webhook"
+            <<: *basic-static-cluster
+            python_wheel_task:
+              package_name: "usecase2"
+              entry_point: "webhook"
+              parameters: [ "--conf-file", "file:fuse://conf/tasks/sample_etl_config.yml" ]
       #############################################################
       # this is an example multitask job with notebook task       #
       #############################################################
