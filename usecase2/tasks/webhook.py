@@ -1,5 +1,6 @@
 from mlflow.utils.rest_utils import http_request
 import json
+import mlflow
 def Client():
   return mlflow.tracking.MlflowClient()
 from pyspark.dbutils import DBUtils
