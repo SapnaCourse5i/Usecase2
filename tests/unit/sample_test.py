@@ -40,7 +40,7 @@ import tempfile
 import pytest
 from io import BytesIO
 from unittest.mock import patch, Mock
-from my_module import (
+from  usecase2.utils import (
     variance_threshold_selection_remove_cols,
     select_kbest_features,
     confusion_metrics,

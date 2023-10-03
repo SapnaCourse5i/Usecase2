@@ -37,6 +37,11 @@ jobs:
       - name: Install dependencies and project in dev mode
         run: |
           pip install -e ".[local,test]"
+
+      - name: Run unit tests
+        run: |
+          echo "Launching unit tests"
+          pytest tests/unit --cov
           
         
       # - name: Remove Databricks Secret
@@ -74,20 +79,20 @@ jobs:
       # - name: Run the Data-preprocessing workflow in a jobless fashion
       #   run: |
       #       dbx launch UseCase2-preprocessing-data --from-assets --trace
-      - name: Workflow Model Training deployment (assets only upload)
-        run: |
-            dbx deploy UseCase2-training-data --assets-only 
+      # - name: Workflow Model Training deployment (assets only upload)
+      #   run: |
+      #       dbx deploy UseCase2-training-data --assets-only 
 
-      - name: Run the Model Training workflow in a jobless fashion
-        run: |
-            dbx launch UseCase2-training-data --from-assets --trace
-      - name: Workflow  deployment (assets only upload)
-        run: |
-            dbx deploy deployment --assets-only 
+      # - name: Run the Model Training workflow in a jobless fashion
+      #   run: |
+      #       dbx launch UseCase2-training-data --from-assets --trace
+      # - name: Workflow  deployment (assets only upload)
+      #   run: |
+      #       dbx deploy deployment --assets-only 
 
-      - name: Run the Model Training workflow in a jobless fashion
-        run: |
-            dbx launch deployment --from-assets --trace
+      # - name: Run the Model Training workflow in a jobless fashion
+      #   run: |
+      #       dbx launch deployment --from-assets --trace
       
 
       
