@@ -5,9 +5,11 @@ import mlflow
 from pyspark.sql import SparkSession
 from unittest.mock import MagicMock
 # warnings.filterwarnings('ignore')
-from pyspark.dbutils import DBUtils
-from databricks.feature_store import feature_table, FeatureLookup,FeatureStoreClient
-fs = FeatureStoreClient()
+# from pyspark.dbutils import DBUtils
+# from databricks.feature_store import feature_table, FeatureLookup,FeatureStoreClient
+# fs = FeatureStoreClient()
+
+from conftest import DBUtilsFixture
 # from usecase2.tasks.sample_etl_task import SampleETLTask
 # from usecase2.tasks.sample_ml_task import SampleMLTask
 
