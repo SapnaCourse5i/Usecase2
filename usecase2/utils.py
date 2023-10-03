@@ -23,7 +23,7 @@ def variance_threshold_selection_remove_cols(df:pd.DataFrame, threshold):
   """
 
   selector = sfs.VarianceThreshold(threshold=threshold)
-  selector = selector.fit_transform(df)
+  selector = selector.fit(df)
 
   # cols_to_remove = [col for col in df.columns if col not in selected_features.columns]
   cols_to_remove=[col for col in df.columns 
@@ -114,50 +114,50 @@ def roc_curve_fig(y_test, y_prop,image_path):
 
     
       
-def calculate_top_shap_features(df, id_col_list, model, n):
-    """
-        Calculate top  n features.
+# def calculate_top_shap_features(df, id_col_list, model, n):
+#     """
+#         Calculate top  n features.
 
-        Parameters:
-        - df : dataframe.
-        - id_col_list: lookup key.
-        - model : model classifier
-        - n : no of features
+#         Parameters:
+#         - df : dataframe.
+#         - id_col_list: lookup key.
+#         - model : model classifier
+#         - n : no of features
 
-        Returns:
-        - top n features
-        """
-# Initialize SHAP explainer
-    explainer = shap.Explainer(model)
+#         Returns:
+#         - top n features
+#         """
+# # Initialize SHAP explainer
+#     explainer = shap.Explainer(model)
     
-    # Calculate SHAP values for the entire DataFrame
-    shap_values = explainer.shap_values(df.drop(id_col_list, axis=1))
+#     # Calculate SHAP values for the entire DataFrame
+#     shap_values = explainer.shap_values(df.drop(id_col_list, axis=1))
     
-    # Create a new DataFrame to store the top features for each row
-    top_features_df = pd.DataFrame(index=df.index)
+#     # Create a new DataFrame to store the top features for each row
+#     top_features_df = pd.DataFrame(index=df.index)
     
-    # Iterate through rows and extract top n features
-    for row_idx in range(len(df)):
-        shap_values_row = shap_values[row_idx]
+#     # Iterate through rows and extract top n features
+#     for row_idx in range(len(df)):
+#         shap_values_row = shap_values[row_idx]
         
-        # Get the absolute SHAP values
-        abs_shap_values = abs(shap_values_row)
+#         # Get the absolute SHAP values
+#         abs_shap_values = abs(shap_values_row)
         
-        # Get indices of top n features
-        top_feature_indices = abs_shap_values.argsort()[-n:][::-1]
+#         # Get indices of top n features
+#         top_feature_indices = abs_shap_values.argsort()[-n:][::-1]
         
-        # Get corresponding feature names
-        top_feature_names = df.drop(id_col_list, axis=1).columns[top_feature_indices]
+#         # Get corresponding feature names
+#         top_feature_names = df.drop(id_col_list, axis=1).columns[top_feature_indices]
         
-        # Add the id_col_list column values to the new DataFrame
-        for col in id_col_list:
-            top_features_df.loc[row_idx, col] = df.loc[row_idx, col]
+#         # Add the id_col_list column values to the new DataFrame
+#         for col in id_col_list:
+#             top_features_df.loc[row_idx, col] = df.loc[row_idx, col]
         
-        # Add the top feature names to the new DataFrame
-        for i in range(n):
-            top_features_df.loc[row_idx, f'REASON{i+1}'] = top_feature_names[i]
+#         # Add the top feature names to the new DataFrame
+#         for i in range(n):
+#             top_features_df.loc[row_idx, f'REASON{i+1}'] = top_feature_names[i]
     
-    return top_features_df
+#     return top_features_df
 
 
 def push_df_to_s3(df,bucket_name,object_key,s3):
