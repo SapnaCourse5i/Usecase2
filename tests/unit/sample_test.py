@@ -48,7 +48,9 @@ from  usecase2.utils import (
     roc_curve_fig,
     # calculate_top_shap_features,
     push_df_to_s3,
+
 )
+from usecase2.tasks.model_pipeline import metrics
 
 # Fixture to create a temporary MLflow run
 @pytest.fixture(scope="function")
@@ -162,6 +164,36 @@ def test_push_df_to_s3():
     assert result == {"df_push_status": 'successs'}
     s3_mock.Object.assert_called_once_with(bucket_name, object_key)
     s3_mock.Object().put.assert_called_once()
+
+
+
+
+def test_metrics():
+    # Create sample data
+    y_train = [1, 0, 1, 1, 0, 0]
+    y_pred_train = [1, 0, 1, 0, 1, 0]
+    
+    y_val = [1, 0, 1, 1, 0, 0]
+    y_pred_val = [1, 0, 1, 0, 1, 0]
+    
+    y_test = [1, 0, 1, 1, 0, 0]
+    y_pred_test = [1, 0, 1, 0, 1, 0]
+    
+    # Call the metrics function
+    metrics_result = metrics(y_train, y_pred_train, y_val, y_pred_val, y_test, y_pred_test)
+    
+    # Check if the metrics are within the expected range
+    assert 'accuracy_train' in metrics_result
+    assert 'accuracy_val' in metrics_result
+    assert 'accuracy_test' in metrics_result
+    assert 'f1 score train' in metrics_result
+    assert 'f1 score val' in metrics_result
+    assert 'f1 score test' in metrics_result
+    
+    # Check if the metrics are within the valid range (0 <= value <= 1)
+    for key, value in metrics_result.items():
+        assert 0 <= value <= 1
+
 
 
 
