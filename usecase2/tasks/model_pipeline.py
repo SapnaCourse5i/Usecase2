@@ -42,7 +42,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix, classification_report
 
 from databricks.feature_store import feature_table, FeatureLookup
-from usecase2.utils import select_kbest_features,confusion_metrics,roc_curve
+from usecase2.utils import select_kbest_features,confusion_metrics,roc_curve_fig
 # from utils import select_kbest_features
 
 # from evidently import ColumnMapping
@@ -312,7 +312,7 @@ class model_training(Task):
             mlflow.log_metric("roc_auc",roc_auc)
             
             mlflow.log_metrics(self.metrics(y_train,y_pred_train,y_val,y_pred_val,y_test,y_pred_test))
-            roc_curve(y_test, y_pred_probs)
+            roc_curve_fig(y_test, y_pred_probs)
 
             # mlflow.xgboost.log_model(xgb_model=model_xgb,artifact_path="usecase2",registered_model_name="Physician Model")
             mlflow.log_artifact('confusion_matrix.png')

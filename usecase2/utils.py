@@ -79,7 +79,7 @@ def confusion_metrics(y_test,y_pred):
     
     return cm,classification_metrics
 
-def roc_curve(y_test, y_prop):
+def roc_curve_fig(y_test, y_prop):
       """
       Logs Roc_auc curve in MLflow.
 

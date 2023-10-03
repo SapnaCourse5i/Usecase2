@@ -132,8 +132,8 @@ def test_push_df_to_s3():
     # Create sample data
     data = {'A': [1, 2, 3, 4, 5], 'B': [0, 1, 0, 1, 0]}
     df = pd.DataFrame(data)
-    bucket_name = 'my-bucket'
-    object_key = 'my-data.csv'
+    bucket_name = 's3'
+    object_key = 'test-data.csv'
     
     # Mock the S3 object
     s3_mock = Mock()
