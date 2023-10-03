@@ -34,7 +34,8 @@ TEST_REQUIREMENTS = [
     "pytest",
     "coverage[toml]",
     "pytest-cov",
-    "dbx>=0.8"
+    "dbx>=0.8",
+    "shap"
 ]
 
 setup(
