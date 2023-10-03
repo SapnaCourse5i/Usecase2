@@ -82,7 +82,7 @@ def confusion_metrics(y_test,y_pred,image_path):
     
     return cm,classification_metrics
 
-def roc_curve_fig(y_test, y_prop):
+def roc_curve_fig(y_test, y_prop,image_path):
       """
       Logs Roc_auc curve in MLflow.
 
@@ -108,9 +108,9 @@ def roc_curve_fig(y_test, y_prop):
       plt.ylabel('True Positive Rate')
       plt.title('Receiver Operating Characteristic (ROC) Curve')
       plt.legend(loc='lower right')
-      roc_curve_plot_path = "roc_curve.png"
+      # roc_curve_plot_path = imahe
       
-      plt.savefig(roc_curve_plot_path)
+      plt.savefig(image_path)
 
     
       

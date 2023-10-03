@@ -312,7 +312,7 @@ class model_training(Task):
             mlflow.log_metric("roc_auc",roc_auc)
             
             mlflow.log_metrics(self.metrics(y_train,y_pred_train,y_val,y_pred_val,y_test,y_pred_test))
-            roc_curve_fig(y_test, y_pred_probs)
+            roc_curve_fig(y_test, y_pred_probs,'roc_auc_curve.png')
 
             # mlflow.xgboost.log_model(xgb_model=model_xgb,artifact_path="usecase2",registered_model_name="Physician Model")
             mlflow.log_artifact('confusion_matrix.png')

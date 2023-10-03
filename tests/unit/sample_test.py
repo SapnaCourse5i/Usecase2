@@ -121,18 +121,18 @@ def test_roc_curve(mlflow_run):
     # Create sample data
     y_test = [1, 0, 1, 1, 0, 0]
     y_prob = [0.8, 0.2, 0.6, 0.7, 0.3, 0.4]
-    
+    image_path = 'roc_auc_curve.png'
     # Call the function
-    roc_curve(y_test, y_prob)
-    mlflow.log_figure = MagicMock()
+    roc_curve(y_test, y_prob,image_path)
+    # mlflow.log_figure = MagicMock()
     
     # Check that mlflow.log_figure was called during the run
-    mlflow.log_figure.assert_called()
+    assert os.path.isfile(image_path)
 
 # Test calculate_top_shap_features function
 def test_calculate_top_shap_features():
     # Create sample data
-    data = {'ID': [1, 2, 3, 4, 5], 'B': [0, 1, 0, 1, 0], 'C': [0, 1, 1, 0, 1],'D':[2, 4,0,1]}
+    data = {'ID': [1, 2, 3, 4, 5], 'B': [0, 1, 0, 1, 0], 'C': [0, 1, 1, 0, 1],'D':[2, 4,0,1,1]}
     df = pd.DataFrame(data)
     id_col_list = ['ID']
     model = Mock()
