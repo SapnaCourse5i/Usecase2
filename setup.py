@@ -36,7 +36,8 @@ TEST_REQUIREMENTS = [
     "pytest-cov",
     "dbx>=0.8",
     "shap",
-    "seaborn"
+    "seaborn",
+    "xgboost"
 ]
 
 setup(
