@@ -46,7 +46,7 @@ from  usecase2.utils import (
     select_kbest_features,
     confusion_metrics,
     roc_curve_fig,
-    calculate_top_shap_features,
+    # calculate_top_shap_features,
     push_df_to_s3,
 )
 
