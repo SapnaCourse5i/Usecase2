@@ -10,7 +10,7 @@ import seaborn as sns
 from io import BytesIO
 
 
-def variance_threshold_selection_remove_cols(df, threshold):
+def variance_threshold_selection_remove_cols(df:pd.DataFrame, threshold):
   """
   Selects features with a variance greater than a threshold value and returns a list of columns to be removed.
 
@@ -25,7 +25,10 @@ def variance_threshold_selection_remove_cols(df, threshold):
   selector = sfs.VarianceThreshold(threshold=threshold)
   selected_features = selector.fit_transform(df)
 
-  cols_to_remove = [col for col in df.columns if col not in selected_features.columns]
+  # cols_to_remove = [col for col in df.columns if col not in selected_features.columns]
+  cols_to_remove=[col for col in df.columns 
+          if col not in df.columns[selected_features.get_support()]]
+
 
   return cols_to_remove
 
