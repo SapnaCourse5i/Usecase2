@@ -3,7 +3,11 @@ import statsmodels.stats.outliers_influence as sm
 import sklearn.feature_selection as sfs
 from sklearn.feature_selection import SelectKBest
 import pandas as pd
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, roc_curve, auc
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, roc_curve, auc,confusion_matrix,classification_report
+import shap
+import matlplotlib.pyplot as plt
+import seaborn as sns
+from io import BytesIO
 
 
 def variance_threshold_selection_remove_cols(df, threshold):
@@ -44,37 +48,122 @@ def select_kbest_features(df, target_col,n):
   mask = selector.get_support()
   top_n_features = df.columns[mask]
   top_n_col_list = top_n_features.tolist()
-
-
-  # selector = SelectKBest(k=self.conf['kbestfeatures']['no_of_features'])
-  # df_input=self.preprocessing()
-  # target_col = df_input[self.conf['features']['target_col']]
-  # id_col_list = self.conf['features']['id_col_list']
-  # df_input1=df_input.drop(id_col_list,axis=1)
-  # selected_features = selector.fit_transform(df_input1, target_col)
-
-  # mask = selector.get_support()
-  # top_n_features = df_input1.columns[mask]
-  # top_n_col_list = top_n_features.tolist()
-  
-  # cols_for_model_df_list = id_col_list + top_n_col_list
-  # df_final=df_input[cols_for_model_df_list]
-  # df_final[id_col_list]=df_input[id_col_list]
-  # return top_n_col_list
   return top_n_col_list
 
-def apply_model(model, X_train, y_train, X_val, y_val, drop_id_col_list):
-    # Fit the model
-    model.fit(X_train.drop(drop_id_col_list, axis=1, errors='ignore'), y_train)
 
-    # Make predictions
-    y_train_pred = model.predict(X_train.drop(drop_id_col_list, axis=1, errors='ignore'))
-    y_pred = model.predict(X_val.drop(drop_id_col_list, axis=1, errors='ignore'))
 
-    # Calculate performance metrics
-    accuracy_train = accuracy_score(y_train, y_train_pred)
-    accuracy_val = accuracy_score(y_val, y_pred)
-    f1_train = f1_score(y_train,y_train_pred)
-    f1_val = f1_score(y_val, y_pred)
-    return accuracy_train, accuracy_val,f1_train,f1_val
+def confusion_metrics(y_test,y_pred):
+    """
+    Logs confusion metrics and classification report in MLflow.
+
+    Parameters:
+    - y_test: The true labels (ground truth).
+    - y_pred: The predicted labels (model predictions).
+    - run_name: The name for the MLflow run.
+
+    Returns:
+    - None
+    """
+    # Calculate the confusion matrix
+    cm = confusion_matrix(y_test, y_pred)
+
+    
+    classification_metrics = classification_report(y_test, y_pred, output_dict=True)
+    
+    fig, ax = plt.subplots(figsize=(8, 6))
+    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", ax=ax)
+    plt.xlabel("Predicted")
+    plt.ylabel("Actual")
+    plt.title("Confusion Matrix")
+    plt.savefig('confusion_matrix.png')
+    
+    return cm,classification_metrics
+
+def roc_curve(y_test, y_prop):
+      """
+      Logs Roc_auc curve in MLflow.
+
+      Parameters:
+      - y_test: The true labels (ground truth).
+      - y_prob: The predicted probabilities of labels (model predictions).
+      - run_name: The name for the MLflow run.
+
+      Returns:
+      - None
+      """
+      y_prop = y_prop[:,1]
+      fpr, tpr, thresholds = roc_curve(y_test, y_prop)
+      roc_auc = roc_auc_score(y_test, y_prop)
+
+      # Create and save the ROC curve plot
+      plt.figure(figsize=(8, 6))
+      plt.plot(fpr, tpr, color='darkorange', lw=2, label=f'ROC curve (area = {roc_auc:.2f})')
+      plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+      plt.xlim([0.0, 1.0])
+      plt.ylim([0.0, 1.05])
+      plt.xlabel('False Positive Rate')
+      plt.ylabel('True Positive Rate')
+      plt.title('Receiver Operating Characteristic (ROC) Curve')
+      plt.legend(loc='lower right')
+      roc_curve_plot_path = "roc_curve.png"
+      
+      plt.savefig(roc_curve_plot_path)
+
+    
+      
+def calculate_top_shap_features(df, id_col_list, model, n):
+    """
+        Calculate top  n features.
+
+        Parameters:
+        - df : dataframe.
+        - id_col_list: lookup key.
+        - model : model classifier
+        - n : no of features
+
+        Returns:
+        - top n features
+        """
+# Initialize SHAP explainer
+    explainer = shap.Explainer(model)
+    
+    # Calculate SHAP values for the entire DataFrame
+    shap_values = explainer.shap_values(df.drop(id_col_list, axis=1))
+    
+    # Create a new DataFrame to store the top features for each row
+    top_features_df = pd.DataFrame(index=df.index)
+    
+    # Iterate through rows and extract top n features
+    for row_idx in range(len(df)):
+        shap_values_row = shap_values[row_idx]
+        
+        # Get the absolute SHAP values
+        abs_shap_values = abs(shap_values_row)
+        
+        # Get indices of top n features
+        top_feature_indices = abs_shap_values.argsort()[-n:][::-1]
+        
+        # Get corresponding feature names
+        top_feature_names = df.drop(id_col_list, axis=1).columns[top_feature_indices]
+        
+        # Add the id_col_list column values to the new DataFrame
+        for col in id_col_list:
+            top_features_df.loc[row_idx, col] = df.loc[row_idx, col]
+        
+        # Add the top feature names to the new DataFrame
+        for i in range(n):
+            top_features_df.loc[row_idx, f'REASON{i+1}'] = top_feature_names[i]
+    
+    return top_features_df
+
+
+def push_df_to_s3(df,bucket_name,object_key,s3):
+            csv_buffer = BytesIO()
+            df.to_csv(csv_buffer, index=False)
+            csv_content = csv_buffer.getvalue()
+            
+            s3.Object(bucket_name, object_key).put(Body=csv_content)
+
+            return {"df_push_status": 'successs'}
+    
   

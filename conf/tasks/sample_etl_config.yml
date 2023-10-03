@@ -61,9 +61,9 @@ params :
  subsample': 0.19
 
 deployment-pipeline :
-    job_id: '211378785812175'
+    job_id: '732974406178905'
 
-databricks-url : "https://dbc-e78722a2-75b4.cloud.databricks.com"
+databricks-url : "https://dbc-34a6125d-ed23.cloud.databricks.com/"
 
 
 

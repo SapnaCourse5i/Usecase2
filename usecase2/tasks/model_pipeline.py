@@ -42,7 +42,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix, classification_report
 
 from databricks.feature_store import feature_table, FeatureLookup
-from usecase2.utils import select_kbest_features
+from usecase2.utils import select_kbest_features,confusion_metrics,roc_curve
 # from utils import select_kbest_features
 
 # from evidently import ColumnMapping
@@ -278,19 +278,7 @@ class model_training(Task):
     
 
         df,X_train, X_val, y_train, y_val,X_test,y_test,training_set=self.train_test_val_split(target,self.conf['split']['test_split'],self.conf['split']['val_split'],self.conf['feature-store']['table_name'],self.conf['feature-store']['lookup_key'],inference_data_df)
-        # df_train_spark = spark.createDataFrame(X_train.drop(self.conf['features']['id_col_list'],axis=1))
-
-        # csv_buffer = BytesIO()
-        # X_test.to_csv(csv_buffer, index=False)
-        # csv_content = csv_buffer.getvalue()
-
-        # s3 = boto3.resource("s3",aws_access_key_id=aws_access_key, 
-        #             aws_secret_access_key=aws_secret_key, 
-        #             region_name='ap-south-1')
-
-        # s3_object_key = self.conf['s3']['X_test'] 
-        # s3.Object(self.conf['s3']['bucket_name'], s3_object_key).put(Body=csv_content)
-        # print('uploaded file')
+        
         mlflow.set_experiment(self.conf['Mlflow']['experiment_name'])
         with mlflow.start_run() as run:
             # print(self.conf['params'])
@@ -310,7 +298,7 @@ class model_training(Task):
             print(y_test)
             fpr, tpr, threshold = roc_curve(y_test,y_pred_test)
             roc_auc = auc(fpr, tpr)
-            cm=self.confusion_metrics(y_test,y_pred_test)
+            cm=confusion_metrics(y_test,y_pred_test)
             fs.log_model(
                                 model=model_xgb,
                                 artifact_path="usecase",
@@ -324,7 +312,7 @@ class model_training(Task):
             mlflow.log_metric("roc_auc",roc_auc)
             
             mlflow.log_metrics(self.metrics(y_train,y_pred_train,y_val,y_pred_val,y_test,y_pred_test))
-            self.roc_curve(y_test, y_pred_probs)
+            roc_curve(y_test, y_pred_probs)
 
             # mlflow.xgboost.log_model(xgb_model=model_xgb,artifact_path="usecase2",registered_model_name="Physician Model")
             mlflow.log_artifact('confusion_matrix.png')
