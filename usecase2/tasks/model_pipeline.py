@@ -298,7 +298,7 @@ class model_training(Task):
             print(y_test)
             fpr, tpr, threshold = roc_curve(y_test,y_pred_test)
             roc_auc = auc(fpr, tpr)
-            cm=confusion_metrics(y_test,y_pred_test)
+            cm=confusion_metrics(y_test,y_pred_test,'confusion_matrix.png')
             fs.log_model(
                                 model=model_xgb,
                                 artifact_path="usecase",

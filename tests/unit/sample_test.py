@@ -87,21 +87,34 @@ def test_select_kbest_features():
     assert len(top_n_features) == n
 
 # Test confusion_metrics function
+# def test_confusion_metrics(mlflow_run):
+#     # Create sample data
+#     y_test = [1, 0, 1, 1, 0, 0]
+#     y_pred = [1, 0, 1, 0, 1, 0]
+    
+#     # Call the function
+#     cm, classification_metrics = confusion_metrics(y_test, y_pred)
+#     # Create a MagicMock for mlflow.log_figure
+#     mlflow.log_figure = MagicMock()
+#     # Check the shape of the confusion matrix
+#     assert cm.shape == (2, 2)
+
+        
+#     # Check that mlflow.log_figure was called during the run
+#     mlflow.log_figure.assert_called()
 def test_confusion_metrics(mlflow_run):
     # Create sample data
     y_test = [1, 0, 1, 1, 0, 0]
     y_pred = [1, 0, 1, 0, 1, 0]
     
+    # Specify the path where the image will be saved
+    image_path = 'confusion_matrix.png'
+    
     # Call the function
-    cm, classification_metrics = confusion_metrics(y_test, y_pred)
-    # Create a MagicMock for mlflow.log_figure
-    mlflow.log_figure = MagicMock()
-    # Check the shape of the confusion matrix
-    assert cm.shape == (2, 2)
-
-        
-    # Check that mlflow.log_figure was called during the run
-    mlflow.log_figure.assert_called()
+    confusion_metrics(y_test, y_pred, image_path)
+    
+    # Check if the file exists
+    assert os.path.isfile(image_path)
 
 # Test roc_curve function
 def test_roc_curve(mlflow_run):

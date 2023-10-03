@@ -23,11 +23,11 @@ def variance_threshold_selection_remove_cols(df:pd.DataFrame, threshold):
   """
 
   selector = sfs.VarianceThreshold(threshold=threshold)
-  selected_features = selector.fit_transform(df)
+  selector = selector.fit_transform(df)
 
   # cols_to_remove = [col for col in df.columns if col not in selected_features.columns]
   cols_to_remove=[col for col in df.columns 
-          if col not in df.columns[selected_features.get_support()]]
+          if col not in df.columns[selector.get_support()]]
 
 
   return cols_to_remove
@@ -55,7 +55,7 @@ def select_kbest_features(df, target_col,n):
 
 
 
-def confusion_metrics(y_test,y_pred):
+def confusion_metrics(y_test,y_pred,image_path):
     """
     Logs confusion metrics and classification report in MLflow.
 
@@ -78,7 +78,7 @@ def confusion_metrics(y_test,y_pred):
     plt.xlabel("Predicted")
     plt.ylabel("Actual")
     plt.title("Confusion Matrix")
-    plt.savefig('confusion_matrix.png')
+    plt.savefig(image_path)
     
     return cm,classification_metrics
 
