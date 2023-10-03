@@ -50,19 +50,7 @@ class FeatureEngineering_Pipeline(Task):
 
             return {"df_push_status": 'success'}
 
-    # def push_final_feature_df_to_s3(self,df,access_key,secret_key):
-    #         csv_buffer = BytesIO()
-    #         df.to_csv(csv_buffer, index=False)
-    #         csv_content = csv_buffer.getvalue()
-
-    #         s3 = boto3.resource("s3",aws_access_key_id=access_key, 
-    #                   aws_secret_access_key=secret_key, 
-    #                   region_name='ap-south-1')
-
-    #         s3_object_key = self.conf['cleaned_data']['final_features_df_path'] 
-    #         s3.Object(self.conf['s3']['bucket_name'], s3_object_key).put(Body=csv_content)
-
-    #         return {"df_push_status": 'success'}
+   
     def preprocessing(self):
         """
            fetch data from S3 bucket , clean the data 
@@ -133,8 +121,8 @@ class FeatureEngineering_Pipeline(Task):
         
         online_store_spec = AmazonDynamoDBSpec(
                         region="us-west-2",
-                        write_secret_prefix="feature-store-example-write/dynamo",
-                        read_secret_prefix="feature-store-example-read/dynamo",
+                        write_secret_prefix="feature-store-example-write1/dynamo",
+                        read_secret_prefix="feature-store-example-read1/dynamo",
                         table_name = self.conf['feature-store']['online_table_name']
                         )
                 
