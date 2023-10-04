@@ -49,36 +49,11 @@ from usecase2.utils import select_kbest_features,confusion_metrics,roc_curve_fig
 # from utils import apply_model
 
 warnings.filterwarnings('ignore')
-# from pyspark.dbutils import DBUtils
+from pyspark.dbutils import DBUtils
 
 fs = feature_store.FeatureStoreClient()
 
 
-spark = SparkSession.builder.appName("CSV Loading Example").getOrCreate()
-
-dbutils = DBUtils(spark)
-
-aws_access_key = dbutils.secrets.get(scope="secrets-scope2", key="aws-access-key")
-aws_secret_key = dbutils.secrets.get(scope="secrets-scope2", key="aws-secret-key")
-
-s3 = boto3.resource("s3",aws_access_key_id=aws_access_key, 
-        aws_secret_access_key=aws_secret_key, 
-        region_name='ap-south-1')
-
-bucket_name =  self.conf['s3']['bucket_name']
-csv_file_key = self.conf['cleaned_data']['final_features_df_path']
-# print('start')
-
-
-s3_object = s3.Object(bucket_name, csv_file_key)
-
-csv_content = s3_object.get()['Body'].read()
-
-df_input = pd.read_csv(BytesIO(csv_content))
-
-
-
-df_input_spark = spark.createDataFrame(df_input)
 
 
 class model_training(Task):
@@ -269,27 +244,27 @@ class model_training(Task):
             Inference the model.
 
         """
-        # spark = SparkSession.builder.appName("CSV Loading Example").getOrCreate()
+        spark = SparkSession.builder.appName("CSV Loading Example").getOrCreate()
 
-        # dbutils = DBUtils(spark)
+        dbutils = DBUtils(spark)
 
-        # aws_access_key = dbutils.secrets.get(scope="secrets-scope2", key="aws-access-key")
-        # aws_secret_key = dbutils.secrets.get(scope="secrets-scope2", key="aws-secret-key")
+        aws_access_key = dbutils.secrets.get(scope="secrets-scope2", key="aws-access-key")
+        aws_secret_key = dbutils.secrets.get(scope="secrets-scope2", key="aws-secret-key")
         
-        # s3 = boto3.resource("s3",aws_access_key_id=aws_access_key, 
-        #         aws_secret_access_key=aws_secret_key, 
-        #         region_name='ap-south-1')
+        s3 = boto3.resource("s3",aws_access_key_id=aws_access_key, 
+                aws_secret_access_key=aws_secret_key, 
+                region_name='ap-south-1')
         
-        # bucket_name =  self.conf['s3']['bucket_name']
-        # csv_file_key = self.conf['cleaned_data']['final_features_df_path']
-        # # print('start')
+        bucket_name =  self.conf['s3']['bucket_name']
+        csv_file_key = self.conf['cleaned_data']['final_features_df_path']
+        # print('start')
 
         
-        # s3_object = s3.Object(bucket_name, csv_file_key)
+        s3_object = s3.Object(bucket_name, csv_file_key)
         
-        # csv_content = s3_object.get()['Body'].read()
+        csv_content = s3_object.get()['Body'].read()
 
-        # df_input = pd.read_csv(BytesIO(csv_content))
+        df_input = pd.read_csv(BytesIO(csv_content))
 
         
 
