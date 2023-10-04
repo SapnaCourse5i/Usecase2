@@ -31,6 +31,7 @@ LOCAL_REQUIREMENTS = [
 
 TEST_REQUIREMENTS = [
     # development & testing tools
+    "pyspark==3.2.1",
     "pytest",
     "coverage[toml]",
     "pytest-cov",
