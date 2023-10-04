@@ -49,7 +49,7 @@ from usecase2.utils import select_kbest_features,confusion_metrics,roc_curve_fig
 # from utils import apply_model
 
 warnings.filterwarnings('ignore')
-from pyspark.dbutils import DBUtils
+# from pyspark.dbutils import DBUtils
 
 fs = feature_store.FeatureStoreClient()
 
