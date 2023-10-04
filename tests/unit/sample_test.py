@@ -173,6 +173,27 @@ def test_push_df_to_s3():
     s3_mock.Object().put.assert_called_once()
 
 
+# def preprocess(df_input):
+#     df_input = df_input.reset_index()
+#     df_input=df_input.drop('index',axis=1)
+
+
+#     #Clean column names
+#     print(df_input.columns)
+#     df_input.columns = df_input.columns.str.strip()
+#     df_input.columns = df_input.columns.str.replace(' ', '_')
+#     df_input[self.conf['features']['value_replace']].replace({' M ': 'M', ' F ': 'F'},inplace=True)
+    
+#     df_input.drop(self.conf['features']['drop_col'], axis= 1, inplace= True)
+#     onehot_cols=self.conf['features']['onehot_cols']
+#     df_input = pd.get_dummies(df_input, columns=onehot_cols, drop_first=True)
+    
+
+#     df_feature = df_input.drop(self.conf['features']['target_col'],axis=1)
+#     return df_input,df_feature
+    
+
+
 
 
 # def test_metrics():
