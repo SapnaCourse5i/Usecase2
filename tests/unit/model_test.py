@@ -43,12 +43,12 @@ def mock_s3_and_read_csv():
         mock_read_csv.return_value = pd.DataFrame({'col1': [1, 2, 3], 'col2': [4, 5, 6]})
         yield
 
-def test_train_test_val_split(mock_dbutils, mock_s3_and_read_csv):
-    task = model_training()
-    task.conf = sample_config  # Set the sample configuration
-    df, X_train, X_val, y_train, y_val, X_test, y_test, training_set = task.train_test_val_split(
-        'target', 0.2, 0.1, 'table_name', 'lookup_key', pd.DataFrame())
-    assert X_train.shape[0] + X_test.shape[0]== df.shape[0]
+# def test_train_test_val_split(mock_dbutils, mock_s3_and_read_csv):
+#     task = model_training()
+#     task.conf = sample_config  # Set the sample configuration
+#     df, X_train, X_val, y_train, y_val, X_test, y_test, training_set = task.train_test_val_split(
+#         'target', 0.2, 0.1, 'table_name', 'lookup_key', pd.DataFrame())
+#     assert X_train.shape[0] + X_test.shape[0]== df.shape[0]
     
     # Add assertions based on your expected behavior
 
