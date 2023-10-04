@@ -83,6 +83,13 @@ class DBUtilsFixture:
             self.secrets1[scope][key] = []
             self.secrets1[scope][key].append(value)
         # Append the value to the list of secrets for the key in the scope
+    def secrets_get(self, scope, key):
+        """
+        Retrieve a secret from a specific scope.
+        """
+        if scope in self.secrets1 and key in self.secrets1[scope]:
+            return self.secrets1[scope][key]
+        return None
 
 
 @pytest.fixture(scope="session")
