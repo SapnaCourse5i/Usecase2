@@ -95,7 +95,7 @@ def roc_curve_fig(y_test, y_prop,image_path):
       Returns:
       - None
       """
-      y_prop = y_prop[:,1]
+      # y_prop = y_prop[:,1]
       fpr, tpr, thresholds = roc_curve(y_test, y_prop)
       roc_auc = roc_auc_score(y_test, y_prop)
 

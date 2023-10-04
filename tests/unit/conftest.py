@@ -36,6 +36,8 @@ class DBUtilsFixture:
 
     def __init__(self):
         self.fs = self
+        self.secrets1 = {}
+        self.config = {}
 
     def cp(self, src: str, dest: str, recurse: bool = False):
         copy_func = shutil.copytree if recurse else shutil.copy
