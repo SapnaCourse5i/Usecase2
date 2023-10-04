@@ -5,7 +5,7 @@ from unittest.mock import patch, MagicMock
 # Sample configuration for testing
 from conftest import DBUtilsFixture
 dbutils=DBUtilsFixture()
-# from usecase2.tasks.model_pipeline import model_training
+from usecase2.tasks.model_pipeline import model_training
 
 
 
