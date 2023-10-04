@@ -3,6 +3,7 @@ import pandas as pd
 from unittest.mock import patch, MagicMock
 from usecase2.tasks.model_pipeline import model_training
 # Sample configuration for testing
+from conftest import DBUtilsFixture
 
 
 # In your test file, before importing the class with 'pyspark.dbutils'
