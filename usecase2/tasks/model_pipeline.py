@@ -51,7 +51,7 @@ from usecase2.utils import select_kbest_features,confusion_metrics,roc_curve_fig
 # from utils import apply_model
 
 warnings.filterwarnings('ignore')
-from pyspark.dbutils import DBUtils
+# from pyspark.dbutils import DBUtils
 
 fs = feature_store.FeatureStoreClient()
 
@@ -340,32 +340,16 @@ class model_training(Task):
 
             
 
-        return X_test
+        # return X_test
     #,y_test,X_val,df_input_spark.select(self.conf['features']['id_col_list'])
     
 
     def inference(self):
-         X_test=self.train_model()
-        #  print(X_test.shape)
-        #  print(X_test.columns)
-        #  print(y_test)
+       
       
          X_test1=fs.read_table(self.conf['feature-store']['table_name'])
          
-        #  spark = SparkSession.builder.appName("CSV Loading Example").getOrCreate()
-        #  spark_test = spark.createDataFrame(X_test)
-        # #  batch_df=X_test[self.conf['features']['id_col_list']]
-        #  print(len(X_test1.columns))
-        #  print(X_test1.count())
-        # #  inference_list=X_test['NPI_ID'].tolist()
-        #  all_features =top_features+ self.conf['features']['id_col_list']
-        #  print(all_features)
-        #  X_test2=X_test1.select(all_features)
-        #  print(len(X_test2.columns))
-
-        #  X_test1=X_test1.filter(X_test1['NPI_ID'].isin(spark_test))
-        #  print(len(X_test1.columns))
-         
+       
          print('scoring now')
          test_pred = fs.score_batch("models:/usecase2_model/latest", X_test1)
          print('scoring done')
@@ -377,76 +361,13 @@ class model_training(Task):
 
          print('converted to pandas')
          print(ans_test.columns)
-        #  X_test1=X_test1.toPandas()
-        #  df_refernce=X_test1[:2500,:]
-        #  df_test=X_test1[2500:,:]
-        #  y_pred=model_xgb.predict(X_test.drop(self.conf['features']['id_col_list'],axis=1))
-        #  y_test = y_test.reset_index()
-        #  appended_df = test_pred.union(y_test)
-        #  print(appended_df.columns)
-        #  y_test=y_test.tolist()
-        #  def add_labels(indx):
-        #     return y_test[indx-1] # since row num begins from 1
-        #  labels_udf = udf(add_labels, IntegerType())
-
-        # #  a = spark.createDataFrame([("Dog", "Cat"), ("Cat", "Dog"), ("Mouse", "Cat")],["Animal", "Enemy"])
-        #  test_pred.createOrReplaceTempView('a')
-        #  a = spark.sql('select row_number() over (order by "Animal") as num, * from a')
-
-        #  a.show()
-        #  y_pred = test_pred.select(['prediction']).collect()
-        #  y_pred = predictions_train.select(['prediction']).collect()
-
-
-        #  print(classification_report(y_test, y_pred))
-        #  df_pred = test_pred.withColumn("actual", col("col2") * numpy_array)
-
-        #  ans_test = test_pred.select('prediction')
-        #  print(ans_test)
-        #  ans_test = ans_test.toPandas()
-
-        #  print('created test')
-
-        #  y_test = y_test.reset_index()
-
-        #  y_test.drop('index',axis=1,inplace=True)
-
-        #  ans_test['actual'] = y_test
-
-        #  output_df = ans_test[['prediction','actual']]
-
-        #  print(confusion_matrix(output_df['prediction'],output_df['actual']))
-
-        #  print(accuracy_score(output_df['prediction'],output_df['actual'])*100)
-
-        #  top_features_df=self.calculate_top_shap_features(X_test,self.conf['features']['id_Col_list'],model=model,n=3)
-        #  print(top_features_df.head())
-
-        
-
-         # Visualize the SHAP explanation
-        #  shap.plots.bar(shap_values[1],show=False)
-        #  shap.summary_plot(shap_values, X_test,show=False)
-        #  fig1=plt.savefig('summary_plot.png')
-
-
-         
-        # Save the output to a Bytes IO object
-        #  png_data = io.BytesIO()
-        #  fig1.savefig(png_data)
-        # Seek back to the start so boto3 uploads from the start of the data
-        #  bits.seek(0)
-
-        # Upload the data to S3
-        #  s3 = boto3.client('s3')
-         
-        #  s3.put_object(Bucket=[self.conf['s3']['bucket_name']], Key=self.conf['s3']['figure_path'], Body=png_data)
 
 
            
 
     def launch(self):
         self.logger.info("Launching Model Training task")
+        self.train_model()
         self.inference()
         self.logger.info("Model Training finished!")
 
