@@ -53,7 +53,7 @@ from  usecase2.utils import (
     confusion_metrics,
     roc_curve_fig,
     # calculate_top_shap_features,
-    push_df_to_s3,read_secrets
+    push_df_to_s3,read_secrets,metrics
 
 )
 # from usecase2.tasks.model_pipeline import model_training
@@ -222,7 +222,7 @@ def test_metrics():
     y_pred_test = [1, 0, 1, 0, 1, 0]
     
     # Call the metrics function
-    metrics_result = ms.metrics(y_train, y_pred_train, y_val, y_pred_val, y_test, y_pred_test)
+    metrics_result = metrics(y_train, y_pred_train, y_val, y_pred_val, y_test, y_pred_test)
     
     # Check if the metrics are within the expected range
     assert 'accuracy_train' in metrics_result

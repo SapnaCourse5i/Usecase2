@@ -67,6 +67,21 @@ class DBUtilsFixture:
         deletion_func = shutil.rmtree if recurse else os.remove
         deletion_func(path)
 
+    # My functions 
+    def store_secret(self, scope: str, key: str, value: str):
+        """
+        Store a secret within a specific scope.
+        """
+        # Check if the scope already exists in secrets, if not, create it
+        if scope not in self.secrets1:
+            self.secrets1[scope] = {}
+
+        # Check if the key already exists in the scope, if not, create it as a list
+        if key not in self.secrets1[scope]:
+            self.secrets1[scope][key] = []
+            self.secrets1[scope][key].append(value)
+        # Append the value to the list of secrets for the key in the scope
+
 
 @pytest.fixture(scope="session")
 def spark() -> SparkSession:
