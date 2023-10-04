@@ -57,7 +57,9 @@ from  usecase2.utils import (
 
 )
 from usecase2.tasks.model_pipeline import model_training
-import  model_training.metrics as ms
+from usecase2.common import Task
+# import  model_training.metrics as ms
+ms=model_training(Task)
 
 # Fixture to create a temporary MLflow run
 @pytest.fixture(scope="function")
@@ -187,7 +189,7 @@ def test_metrics():
     y_pred_test = [1, 0, 1, 0, 1, 0]
     
     # Call the metrics function
-    metrics_result = metrics(y_train, y_pred_train, y_val, y_pred_val, y_test, y_pred_test)
+    metrics_result = ms.metrics(y_train, y_pred_train, y_val, y_pred_val, y_test, y_pred_test)
     
     # Check if the metrics are within the expected range
     assert 'accuracy_train' in metrics_result
