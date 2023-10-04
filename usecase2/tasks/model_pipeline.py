@@ -49,15 +49,15 @@ from usecase2.utils import select_kbest_features,confusion_metrics,roc_curve_fig
 # from utils import apply_model
 
 warnings.filterwarnings('ignore')
-from pyspark.dbutils import DBUtils
+# from pyspark.dbutils import DBUtils
 
 fs = feature_store.FeatureStoreClient()
 spark = SparkSession.builder.appName("CSV Loading Example").getOrCreate()
-dbutils = DBUtils(spark)
+# dbutils = DBUtils(spark)
 
 # aws_access_key, aws_secret_key, db_token = read_secrets(dbutils,'secrets-scope2',['aws_access_key','aws_secret_key','databricks-token'])
-aws_access_key = dbutils.secrets.get(scope="secrets-scope2", key="aws-access-key")
-aws_secret_key = dbutils.secrets.get(scope="secrets-scope2", key="aws-secret-key")
+# aws_access_key = dbutils.secrets.get(scope="secrets-scope2", key="aws-access-key")
+# aws_secret_key = dbutils.secrets.get(scope="secrets-scope2", key="aws-secret-key")
 
 
 
@@ -250,11 +250,11 @@ class model_training(Task):
 
         """
         # spark = SparkSession.builder.appName("CSV Loading Example").getOrCreate()
+        from pyspark.dbutils import DBUtils
+        dbutils = DBUtils(spark)
 
-        # dbutils = DBUtils(spark)
-
-        # aws_access_key = dbutils.secrets.get(scope="secrets-scope2", key="aws-access-key")
-        # aws_secret_key = dbutils.secrets.get(scope="secrets-scope2", key="aws-secret-key")
+        aws_access_key = dbutils.secrets.get(scope="secrets-scope2", key="aws-access-key")
+        aws_secret_key = dbutils.secrets.get(scope="secrets-scope2", key="aws-secret-key")
         
         s3 = boto3.resource("s3",aws_access_key_id=aws_access_key, 
                 aws_secret_access_key=aws_secret_key, 
