@@ -56,7 +56,7 @@ from  usecase2.utils import (
     push_df_to_s3,
 
 )
-from usecase2.tasks.model_pipeline import model_training
+# from usecase2.tasks.model_pipeline import model_training
 
 
 # Fixture to create a temporary MLflow run
