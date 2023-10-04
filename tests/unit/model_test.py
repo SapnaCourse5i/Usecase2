@@ -4,16 +4,18 @@ from unittest.mock import patch, MagicMock
 # from usecase2.tasks.model_pipeline import model_training
 # Sample configuration for testing
 from conftest import DBUtilsFixture
-# from usecase2.tasks.model_pipeline import model_training
+dbutils=DBUtilsFixture()
+from usecase2.tasks.model_pipeline import model_training
+
 
 
 # In your test file, before importing the class with 'pyspark.dbutils'
 # from unittest.mock import MagicMock, patch
 
 # Mock the 'pyspark.dbutils' import
-with patch('usecase2.tasks.model_pipeline.DBUtils', MagicMock()):
-    # Import the class that uses 'pyspark.dbutils'
-    from usecase2.tasks.model_pipeline import model_training
+# with patch('usecase2.tasks.model_pipeline.DBUtils', MagicMock()):
+#     # Import the class that uses 'pyspark.dbutils'
+#     from usecase2.tasks.model_pipeline import model_training
 
 # Rest of your test code
 
