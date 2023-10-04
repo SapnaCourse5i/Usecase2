@@ -18,7 +18,7 @@ from databricks.feature_store.online_store_spec import AmazonDynamoDBSpec
 from sklearn.model_selection import train_test_split
 
 from databricks.feature_store import feature_table, FeatureLookup
-from usecase2.utils import select_kbest_features,confusion_metrics,roc_curve_fig,preprocess
+from usecase2.utils import select_kbest_features,confusion_metrics,roc_curve_fig
 
 import os
 
@@ -83,19 +83,19 @@ class FeatureEngineering_Pipeline(Task):
         csv_content = s3_object.get()['Body'].read()
 
         df_input = pd.read_csv(BytesIO(csv_content))
-        # df_input = df_input.reset_index()
-        # df_input=df_input.drop('index',axis=1)
+        df_input = df_input.reset_index()
+        df_input=df_input.drop('index',axis=1)
 
  
-        # #Clean column names
-        # print(df_input.columns)
-        # df_input.columns = df_input.columns.str.strip()
-        # df_input.columns = df_input.columns.str.replace(' ', '_')
-        # df_input[self.conf['features']['value_replace']].replace({' M ': 'M', ' F ': 'F'},inplace=True)
+        #Clean column names
+        print(df_input.columns)
+        df_input.columns = df_input.columns.str.strip()
+        df_input.columns = df_input.columns.str.replace(' ', '_')
+        df_input[self.conf['features']['value_replace']].replace({' M ': 'M', ' F ': 'F'},inplace=True)
         
-        # df_input.drop(self.conf['features']['drop_col'], axis= 1, inplace= True)
-        # onehot_cols=self.conf['features']['onehot_cols']
-        # df_input = pd.get_dummies(df_input, columns=onehot_cols, drop_first=True)
+        df_input.drop(self.conf['features']['drop_col'], axis= 1, inplace= True)
+        onehot_cols=self.conf['features']['onehot_cols']
+        df_input = pd.get_dummies(df_input, columns=onehot_cols, drop_first=True)
         df_input,df_feature=preprocess(df_input)
         spark.sql(f"CREATE DATABASE IF NOT EXISTS {self.conf['feature-store']['table_name']}")
         # Create a unique table name for each run. This prevents errors if you run the notebook multiple times.
