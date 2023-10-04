@@ -96,7 +96,7 @@ class FeatureEngineering_Pipeline(Task):
         df_input.drop(self.conf['features']['drop_col'], axis= 1, inplace= True)
         onehot_cols=self.conf['features']['onehot_cols']
         df_input = pd.get_dummies(df_input, columns=onehot_cols, drop_first=True)
-        df_input,df_feature=preprocess(df_input)
+        # df_input,df_feature=preprocess(df_input)
         spark.sql(f"CREATE DATABASE IF NOT EXISTS {self.conf['feature-store']['table_name']}")
         # Create a unique table name for each run. This prevents errors if you run the notebook multiple times.
         table_name = self.conf['feature-store']['table_name']
