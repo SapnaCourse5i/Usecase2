@@ -57,7 +57,7 @@ from  usecase2.utils import (
 
 )
 from usecase2.tasks.model_pipeline import model_training
-from model_training import metrics
+import  model_training.metrics as ms
 
 # Fixture to create a temporary MLflow run
 @pytest.fixture(scope="function")
