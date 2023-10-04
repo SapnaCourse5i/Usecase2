@@ -38,10 +38,10 @@ jobs:
         run: |
           pip install -e ".[local,test]"
 
-      # - name: Run unit tests
-      #   run: |
-      #     echo "Launching unit tests"
-      #     pytest tests/unit --cov
+      - name: Run unit tests
+        run: |
+          echo "Launching unit tests"
+          pytest tests/unit --cov
           
         
       # - name: Remove Databricks Secret
