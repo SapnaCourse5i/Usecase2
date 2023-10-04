@@ -90,6 +90,19 @@ class DBUtilsFixture:
         if scope in self.secrets1 and key in self.secrets1[scope]:
             return self.secrets1[scope][key]
         return None
+    
+    @property
+    def secrets(self):
+        """
+        Return a SecretsGetter instance.
+        """
+        return SecretsGetter(self)
+class SecretsGetter:
+    def __init__(self, db_utils_fixture):
+        self.db_utils_fixture = db_utils_fixture
+
+    def get(self, scope, key):
+        return self.db_utils_fixture.secrets_get(scope, key)
 
 
 @pytest.fixture(scope="session")
