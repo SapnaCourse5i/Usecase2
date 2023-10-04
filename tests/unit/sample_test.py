@@ -56,7 +56,8 @@ from  usecase2.utils import (
     push_df_to_s3,
 
 )
-from usecase2.tasks.model_pipeline import metrics
+from usecase2.tasks.model_pipeline import model_training
+from model_training import metrics
 
 # Fixture to create a temporary MLflow run
 @pytest.fixture(scope="function")
