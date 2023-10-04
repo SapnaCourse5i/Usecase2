@@ -55,7 +55,7 @@ fs = feature_store.FeatureStoreClient()
 spark = SparkSession.builder.appName("CSV Loading Example").getOrCreate()
 dbutils = DBUtils(spark)
 
-aws_access_key, aws_secret_key, db_token = read_secrets(dbutils,'secrets-scope2',['aws_access_key','aws_secret_key','databricks-token'])
+aws_access_key, aws_secret_key, db_token = read_secrets(dbutils,'secrets-scope2',['aws-access-key','aws_secret_key','databricks-token'])
 
 
 
