@@ -53,7 +53,7 @@ from  usecase2.utils import (
     confusion_metrics,
     roc_curve_fig,
     # calculate_top_shap_features,
-    push_df_to_s3,
+    push_df_to_s3,read_secrets
 
 )
 # from usecase2.tasks.model_pipeline import model_training
@@ -171,6 +171,20 @@ def test_push_df_to_s3():
     assert result == {"df_push_status": 'successs'}
     s3_mock.Object.assert_called_once_with(bucket_name, object_key)
     s3_mock.Object().put.assert_called_once()
+
+
+def test_read_secrets():
+      
+    
+    dbutils = DBUtilsFixture()
+
+    dbutils.store_secret('test-scope','aws-access-key','JHAVUEFTVCHJACEY')
+    dbutils.store_secret('test-scope','aws-secret-key','36GFUY23GF4VR3YFVECDZRTFFFYG')
+
+    access, secret = read_secrets(dbutils,'test-scope',['aws-access-key','aws-secret-key'])
+    
+    assert access, "Access key is empty."
+    assert secret, "Secret key is empty."
 
 
 # def preprocess(df_input):

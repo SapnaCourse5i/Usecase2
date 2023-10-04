@@ -333,7 +333,7 @@ class model_training(Task):
 
             # mlflow.xgboost.log_model(xgb_model=model_xgb,artifact_path="usecase2",registered_model_name="Physician Model")
             mlflow.log_artifact('confusion_matrix.png')
-            mlflow.log_artifact('roc_curve.png')
+            mlflow.log_artifact('roc_auc_curve.png')
             
             # Save the model as a pickle file
             with open("model.pkl", "wb") as pickle_file:
