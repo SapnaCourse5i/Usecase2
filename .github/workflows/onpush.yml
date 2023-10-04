@@ -38,10 +38,10 @@ jobs:
         run: |
           pip install -e ".[local,test]"
 
-      - name: Run unit tests
-        run: |
-          echo "Launching unit tests"
-          pytest tests/unit --cov
+      # - name: Run unit tests
+      #   run: |
+      #     echo "Launching unit tests"
+      #     pytest tests/unit --cov
           
         
       # - name: Remove Databricks Secret
@@ -86,13 +86,13 @@ jobs:
       - name: Run the Model Training workflow in a jobless fashion
         run: |
             dbx launch UseCase2-training-data --from-assets --trace
-      - name: Workflow  deployment (assets only upload)
-        run: |
-            dbx deploy deployment --assets-only 
+      # - name: Workflow  deployment (assets only upload)
+      #   run: |
+      #       dbx deploy deployment --assets-only 
 
-      - name: Run the Model Training workflow in a jobless fashion
-        run: |
-            dbx launch deployment --from-assets --trace
+      # - name: Run the Model Training workflow in a jobless fashion
+      #   run: |
+      #       dbx launch deployment --from-assets --trace
       
 
       

@@ -7,6 +7,7 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 import shap
 import matplotlib.pyplot as plt
 import seaborn as sns
+from pyspark.sql import SparkSession
 from io import BytesIO
 
 
@@ -168,6 +169,52 @@ def push_df_to_s3(df,bucket_name,object_key,s3):
             s3.Object(bucket_name, object_key).put(Body=csv_content)
 
             return {"df_push_status": 'successs'}
+
+def read_data_from_s3(s3,bucket_name, csv_file_key):
+        
+        s3_object = s3.Object(bucket_name, csv_file_key)
+
+        csv_content = s3_object.get()['Body'].read()
+
+        df_input = pd.read_csv(BytesIO(csv_content))
+
+        return df_input  
+
+def read_secrets(dbutils,scope,keys):
+        
+        h=tuple()
+        for key in keys:
+             j = dbutils.secrets.get(scope=scope, key=key)
+             h = h+ (j,)
+        return h
+
+def metrics(y_train,y_pred_train,y_val,y_pred_val,y_test,y_pred):
+        """
+            Logs f1_Score and accuracy in MLflow.
+
+            Parameters:
+            - y_test: The true labels (ground truth).
+            - y_pred: The predicted labels (model predictions).
+            - run_name: The name for the MLflow run.
+
+            Returns:
+            - f1score and accuracy
+        """
+
+        f1_train = f1_score(y_train, y_pred_train)
+        accuracy_train = accuracy_score(y_train, y_pred_train)
+
+        f1_val = f1_score(y_val, y_pred_val)
+        accuracy_val = accuracy_score(y_val, y_pred_val)
+
+        f1_test = f1_score(y_test, y_pred)
+        accuracy_test = accuracy_score(y_val, y_pred_val)
+        
+        recall_train=recall_score(y_train, y_pred_train)
+        recall_val=recall_score(y_val, y_pred_val)
+    
+        return {'accuracy_train': round(accuracy_train, 2),'accuracy_val': round(accuracy_val, 2),'accuracy_test': round(accuracy_test, 2),
+                'f1 score train': round(f1_train, 2), 'f1 score val': round(f1_val, 2),'f1 score test': round(f1_test, 2)}
 
 
 # def preprocess(df_input):

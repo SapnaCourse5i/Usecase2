@@ -40,7 +40,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix, classification_report
 
 from databricks.feature_store import feature_table, FeatureLookup
-from usecase2.utils import select_kbest_features,confusion_metrics,roc_curve_fig
+from usecase2.utils import select_kbest_features,confusion_metrics,roc_curve_fig,read_secrets,read_data_from_s3,metrics
 # from utils import select_kbest_features
 
 # from evidently import ColumnMapping
@@ -52,7 +52,10 @@ warnings.filterwarnings('ignore')
 from pyspark.dbutils import DBUtils
 
 fs = feature_store.FeatureStoreClient()
+spark = SparkSession.builder.appName("CSV Loading Example").getOrCreate()
+dbutils = DBUtils(spark)
 
+aws_access_key, aws_secret_key, db_token = read_secrets(dbutils,'secrets-scope2',['aws_access_key','aws_secret_key','databricks-token'])
 
 
 
@@ -98,33 +101,33 @@ class model_training(Task):
         X_train, X_val, y_train, y_val = train_test_split(X_train_pre, y_train_pre, test_size=val_split, random_state=42, stratify= y_train_pre)
         return df,X_train, X_val, y_train, y_val,X_test,y_test,training_set#,top_features
     
-    def metrics(self,y_train,y_pred_train,y_val,y_pred_val,y_test,y_pred):
-        """
-            Logs f1_Score and accuracy in MLflow.
+    # def metrics(self,y_train,y_pred_train,y_val,y_pred_val,y_test,y_pred):
+    #     """
+    #         Logs f1_Score and accuracy in MLflow.
 
-            Parameters:
-            - y_test: The true labels (ground truth).
-            - y_pred: The predicted labels (model predictions).
-            - run_name: The name for the MLflow run.
+    #         Parameters:
+    #         - y_test: The true labels (ground truth).
+    #         - y_pred: The predicted labels (model predictions).
+    #         - run_name: The name for the MLflow run.
 
-            Returns:
-            - f1score and accuracy
-        """
+    #         Returns:
+    #         - f1score and accuracy
+    #     """
 
-        f1_train = f1_score(y_train, y_pred_train)
-        accuracy_train = accuracy_score(y_train, y_pred_train)
+    #     f1_train = f1_score(y_train, y_pred_train)
+    #     accuracy_train = accuracy_score(y_train, y_pred_train)
 
-        f1_val = f1_score(y_val, y_pred_val)
-        accuracy_val = accuracy_score(y_val, y_pred_val)
+    #     f1_val = f1_score(y_val, y_pred_val)
+    #     accuracy_val = accuracy_score(y_val, y_pred_val)
 
-        f1_test = f1_score(y_test, y_pred)
-        accuracy_test = accuracy_score(y_val, y_pred_val)
+    #     f1_test = f1_score(y_test, y_pred)
+    #     accuracy_test = accuracy_score(y_val, y_pred_val)
         
-        recall_train=recall_score(y_train, y_pred_train)
-        recall_val=recall_score(y_val, y_pred_val)
+    #     recall_train=recall_score(y_train, y_pred_train)
+    #     recall_val=recall_score(y_val, y_pred_val)
     
-        return {'accuracy_train': round(accuracy_train, 2),'accuracy_val': round(accuracy_val, 2),'accuracy_test': round(accuracy_test, 2),
-                'f1 score train': round(f1_train, 2), 'f1 score val': round(f1_val, 2),'f1 score test': round(f1_test, 2)}
+    #     return {'accuracy_train': round(accuracy_train, 2),'accuracy_val': round(accuracy_val, 2),'accuracy_test': round(accuracy_test, 2),
+    #             'f1 score train': round(f1_train, 2), 'f1 score val': round(f1_val, 2),'f1 score test': round(f1_test, 2)}
    
 
     # def confusion_metrics(self,y_test,y_pred):
@@ -234,7 +237,7 @@ class model_training(Task):
         
 
     
-    def train_model(self,spark,df_input):
+    def train_model(self):
 
 
         """
@@ -244,27 +247,39 @@ class model_training(Task):
             Inference the model.
 
         """
-        spark = SparkSession.builder.appName("CSV Loading Example").getOrCreate()
+        # spark = SparkSession.builder.appName("CSV Loading Example").getOrCreate()
 
-        dbutils = DBUtils(spark)
+        # dbutils = DBUtils(spark)
 
-        aws_access_key = dbutils.secrets.get(scope="secrets-scope2", key="aws-access-key")
-        aws_secret_key = dbutils.secrets.get(scope="secrets-scope2", key="aws-secret-key")
+        # aws_access_key = dbutils.secrets.get(scope="secrets-scope2", key="aws-access-key")
+        # aws_secret_key = dbutils.secrets.get(scope="secrets-scope2", key="aws-secret-key")
         
         s3 = boto3.resource("s3",aws_access_key_id=aws_access_key, 
                 aws_secret_access_key=aws_secret_key, 
                 region_name='ap-south-1')
         
-        bucket_name =  self.conf['s3']['bucket_name']
-        csv_file_key = self.conf['cleaned_data']['final_features_df_path']
-        # print('start')
+        # bucket_name =  self.conf['s3']['bucket_name']
+        # csv_file_key = self.conf['cleaned_data']['final_features_df_path']
+        # # print('start')
 
         
-        s3_object = s3.Object(bucket_name, csv_file_key)
+        # s3_object = s3.Object(bucket_name, csv_file_key)
         
-        csv_content = s3_object.get()['Body'].read()
+        # csv_content = s3_object.get()['Body'].read()
 
-        df_input = pd.read_csv(BytesIO(csv_content))
+        # df_input = pd.read_csv(BytesIO(csv_content))
+
+        # s3 = boto3.resource("s3",aws_access_key_id=aws_access_key, 
+        #         aws_secret_access_key=aws_secret_key, 
+        #         region_name='ap-south-1')
+        
+        # print('enter try')
+        # new_df = fs.read_table(configure['feature-store']['table_name'])
+
+        # print('reading from feature store')
+
+        df_input = read_data_from_s3(s3,self.conf['s3']['bucket_name'],self.conf['cleaned_data']['final_features_df_path'])
+
 
         
 
@@ -311,7 +326,7 @@ class model_training(Task):
             #log all metrics
             mlflow.log_metric("roc_auc",roc_auc)
             
-            mlflow.log_metrics(self.metrics(y_train,y_pred_train,y_val,y_pred_val,y_test,y_pred_test))
+            mlflow.log_metrics(metrics(y_train,y_pred_train,y_val,y_pred_val,y_test,y_pred_test))
             roc_curve_fig(y_test, y_pred_probs,'roc_auc_curve.png')
 
             # mlflow.xgboost.log_model(xgb_model=model_xgb,artifact_path="usecase2",registered_model_name="Physician Model")
