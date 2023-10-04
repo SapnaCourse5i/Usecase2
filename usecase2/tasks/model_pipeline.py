@@ -30,9 +30,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, roc_curve, auc,classification_report
 import xgboost as xgb
-# from evidently.pipeline.column_mapping import ColumnMapping
-# from evidently.report import Report
-# from evidently.metric_preset import DataDriftPreset
+
 
 from databricks import feature_store
 from pyspark.sql import SparkSession
