@@ -103,8 +103,15 @@ class FeatureEngineering_Pipeline(Task):
         print(table_name)
 
         df_feature = df_input.drop(self.conf['features']['target_col'],axis=1)
-        print(df_input.shape)
-        print(df_input.info())
+        # print(df_input.shape)
+        # print(df_input.info())
+        # df1=df.drop(self.conf['features']['target_col'],axis=1)
+        # print(df1.columns)
+        top_features=select_kbest_features(df_feature,df_input[self.conf['features']['target_col']],n=self.conf['kbestfeatures']['no_of_features'])
+        # df_feature=df[top_features+ [self.conf['features']['target_col']]]
+        df_feature=df_feature[top_features]
+        print(df_feature.info())
+        print(df_feature.isna().sum())
 
         df_spark = spark.createDataFrame(df_feature)
 

@@ -85,11 +85,11 @@ class model_training(Task):
         # fs.create_training_set looks up features in model_feature_lookups that match the primary key from inference_data_df
         training_set = fs.create_training_set(inference_data_df, model_feature_lookups, label=target,exclude_columns=lookup_key)
         df= training_set.load_df().toPandas()
-        df1=df.drop(self.conf['features']['target_col'],axis=1)
-        # print(df1.columns)
-        top_features=select_kbest_features(df1,df[self.conf['features']['target_col']],n=self.conf['kbestfeatures']['no_of_features'])
-        df=df[top_features+ [self.conf['features']['target_col']]]
-        print(df.columns)
+        # df1=df.drop(self.conf['features']['target_col'],axis=1)
+        # # print(df1.columns)
+        # top_features=select_kbest_features(df1,df[self.conf['features']['target_col']],n=self.conf['kbestfeatures']['no_of_features'])
+        # df=df[top_features+ [self.conf['features']['target_col']]]
+        print(df.info())
         # X_train, X_val, y_train, y_val,X_test,y_test=self.train_test_val_split(df_input,test_split,val_split)
         
 

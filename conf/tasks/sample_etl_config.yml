@@ -31,7 +31,7 @@ features:
 
 feature-store:
              lookup_key: ["HCP_ID","NPI_ID"]
-             table_name: "usecase2_table"
+             table_name: "phy_table"
              final_features_table : "usecase2_features"
              online_table_name : "usecase2_online_table"
 
