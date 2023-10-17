@@ -102,14 +102,14 @@ class FeatureEngineering_Pipeline(Task):
         table_name = self.conf['feature-store']['table_name']
         print(table_name)
 
-        df_feature = df_input.drop(self.conf['features']['target_col'],axis=1)
+        df_feature = df_input.drop(self.conf['features']['id_target_col_list'],axis=1)
         # print(df_input.shape)
         # print(df_input.info())
         # df1=df.drop(self.conf['features']['target_col'],axis=1)
         # print(df1.columns)
         top_features=select_kbest_features(df_feature,df_input[self.conf['features']['target_col']],n=self.conf['kbestfeatures']['no_of_features'])
         # df_feature=df[top_features+ [self.conf['features']['target_col']]]
-        df_feature=df_feature[top_features]
+        df_feature=df_feature[top_features + [self.conf['features']['id_col_list']]]
         print(df_feature.info())
         print(df_feature.isna().sum())
 
