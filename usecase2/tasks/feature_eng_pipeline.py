@@ -82,54 +82,54 @@ class FeatureEngineering_Pipeline(Task):
         
         csv_content = s3_object.get()['Body'].read()
 
-        df_input = pd.read_csv(BytesIO(csv_content))
-        df_input = df_input.reset_index()
-        df_input=df_input.drop('index',axis=1)
+        # df_input = pd.read_csv(BytesIO(csv_content))
+        # df_input = df_input.reset_index()
+        # df_input=df_input.drop('index',axis=1)
 
  
-        #Clean column names
-        print(df_input.columns)
-        df_input.columns = df_input.columns.str.strip()
-        df_input.columns = df_input.columns.str.replace(' ', '_')
-        df_input[self.conf['features']['value_replace']].replace({' M ': 'M', ' F ': 'F'},inplace=True)
+        # #Clean column names
+        # print(df_input.columns)
+        # df_input.columns = df_input.columns.str.strip()
+        # df_input.columns = df_input.columns.str.replace(' ', '_')
+        # df_input[self.conf['features']['value_replace']].replace({' M ': 'M', ' F ': 'F'},inplace=True)
         
-        df_input.drop(self.conf['features']['drop_col'], axis= 1, inplace= True)
-        onehot_cols=self.conf['features']['onehot_cols']
-        df_input = pd.get_dummies(df_input, columns=onehot_cols, drop_first=True)
-        # df_input,df_feature=preprocess(df_input)
-        spark.sql(f"CREATE DATABASE IF NOT EXISTS {self.conf['feature-store']['table_name']}")
-        # Create a unique table name for each run. This prevents errors if you run the notebook multiple times.
-        table_name = self.conf['feature-store']['table_name']
-        print(table_name)
+        # df_input.drop(self.conf['features']['drop_col'], axis= 1, inplace= True)
+        # onehot_cols=self.conf['features']['onehot_cols']
+        # df_input = pd.get_dummies(df_input, columns=onehot_cols, drop_first=True)
+        # # df_input,df_feature=preprocess(df_input)
+        # spark.sql(f"CREATE DATABASE IF NOT EXISTS {self.conf['feature-store']['table_name']}")
+        # # Create a unique table name for each run. This prevents errors if you run the notebook multiple times.
+        # table_name = self.conf['feature-store']['table_name']
+        # print(table_name)
 
-        df_feature = df_input.drop(self.conf['features']['id_target_col_list'],axis=1)
-        # print(df_input.shape)
-        # print(df_input.info())
-        # df1=df.drop(self.conf['features']['target_col'],axis=1)
-        # print(df1.columns)
-        top_features=select_kbest_features(df_feature,df_input[self.conf['features']['target_col']],n=self.conf['kbestfeatures']['no_of_features'])
-        # df_feature=df[top_features+ [self.conf['features']['target_col']]]
-        print(top_features)
-        x=top_features + ['HCP_ID','NPI_ID']
-        print(x)
-        df_feature=df_input[x]
-        print(df_feature.info())
-        print(df_feature.isna().sum())
+        # df_feature = df_input.drop(self.conf['features']['id_target_col_list'],axis=1)
+        # # print(df_input.shape)
+        # # print(df_input.info())
+        # # df1=df.drop(self.conf['features']['target_col'],axis=1)
+        # # print(df1.columns)
+        # top_features=select_kbest_features(df_feature,df_input[self.conf['features']['target_col']],n=self.conf['kbestfeatures']['no_of_features'])
+        # # df_feature=df[top_features+ [self.conf['features']['target_col']]]
+        # print(top_features)
+        # x=top_features + ['HCP_ID','NPI_ID']
+        # print(x)
+        # df_feature=df_input[x]
+        # print(df_feature.info())
+        # print(df_feature.isna().sum())
 
-        df_spark = spark.createDataFrame(df_feature)
+        # df_spark = spark.createDataFrame(df_feature)
 
-        fs = feature_store.FeatureStoreClient()
+        # fs = feature_store.FeatureStoreClient()
 
-        fs.create_table(
-                name=table_name,
-                primary_keys=self.conf['feature-store']['lookup_key'],
-                df=df_spark,
-                schema=df_spark.schema,
-                description="health features"
-            )
+        # fs.create_table(
+        #         name=table_name,
+        #         primary_keys=self.conf['feature-store']['lookup_key'],
+        #         df=df_spark,
+        #         schema=df_spark.schema,
+        #         description="health features"
+        #     )
         
-        push_status = self.push_df_to_s3(df_input,access_key,secret_key)
-        print(push_status)
+        # push_status = self.push_df_to_s3(df_input,access_key,secret_key)
+        # print(push_status)
         
         online_store_spec = AmazonDynamoDBSpec(
                         region="us-west-2",
