@@ -99,8 +99,8 @@ class FeatureEngineering_Pipeline(Task):
         # # df_input,df_feature=preprocess(df_input)
         # spark.sql(f"CREATE DATABASE IF NOT EXISTS {self.conf['feature-store']['table_name']}")
         # # Create a unique table name for each run. This prevents errors if you run the notebook multiple times.
-        # table_name = self.conf['feature-store']['table_name']
-        # print(table_name)
+        table_name = self.conf['feature-store']['table_name']
+        print(table_name)
 
         # df_feature = df_input.drop(self.conf['features']['id_target_col_list'],axis=1)
         # # print(df_input.shape)
@@ -118,7 +118,7 @@ class FeatureEngineering_Pipeline(Task):
 
         # df_spark = spark.createDataFrame(df_feature)
 
-        # fs = feature_store.FeatureStoreClient()
+        fs = feature_store.FeatureStoreClient()
 
         # fs.create_table(
         #         name=table_name,
