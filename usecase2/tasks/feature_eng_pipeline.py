@@ -139,7 +139,7 @@ class FeatureEngineering_Pipeline(Task):
                         )
                 
         fs.publish_table(table_name, online_store_spec)
-        return df_input
+        # return df_input
         
     
     def feature_selection(self):
