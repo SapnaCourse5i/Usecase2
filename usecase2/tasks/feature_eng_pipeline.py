@@ -111,6 +111,7 @@ class FeatureEngineering_Pipeline(Task):
         # df_feature=df[top_features+ [self.conf['features']['target_col']]]
         print(top_features)
         x=top_features + ['HCP_ID','NPI_ID']
+        print(x)
         df_feature=df_input[x]
         print(df_feature.info())
         print(df_feature.isna().sum())
