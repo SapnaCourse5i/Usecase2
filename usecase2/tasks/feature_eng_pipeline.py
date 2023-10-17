@@ -110,7 +110,8 @@ class FeatureEngineering_Pipeline(Task):
         top_features=select_kbest_features(df_feature,df_input[self.conf['features']['target_col']],n=self.conf['kbestfeatures']['no_of_features'])
         # df_feature=df[top_features+ [self.conf['features']['target_col']]]
         print(top_features)
-        df_feature=df_input[top_features.append([self.conf['features']['id_col_list']])]
+        x=top_features + ['HCP_ID','NPI_ID']
+        df_feature=df_input[x]
         print(df_feature.info())
         print(df_feature.isna().sum())
 
