@@ -43,7 +43,7 @@ variance:
   threshold: 0.1
 
 kbestfeatures:
-  no_of_features: 20
+  no_of_features: 10
 
 
 split :
