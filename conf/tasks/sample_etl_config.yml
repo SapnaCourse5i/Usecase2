@@ -63,7 +63,7 @@ params :
 deployment-pipeline :
     job_id: '732974406178905'
 
-databricks-url : "https://dbc-34a6125d-ed23.cloud.databricks.com/"
+# databricks-url : "https://dbc-34a6125d-ed23.cloud.databricks.com/"
 
 
 
